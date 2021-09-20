@@ -9,14 +9,15 @@ public class BSPDungeon {
     int HorizSptPnt;
     int VertSptPnt;
     int createSpace;
+    int atleastAreas;
 
-    public BSPDungeon(int y, int h, int x, int w) {
+    public BSPDungeon(int y, int h, int x, int w, int al) {
         heightB = y;
         heightE = h;
         widthB = x;
         widthE = w;
         leftChild = null;
-        rightChild = null;
+        atleastAreas = al;
 
     }
 
@@ -43,22 +44,24 @@ public class BSPDungeon {
             if (splitDirection) { //HORIZONTAL LEFT
                 random = new Random();
                 createSpace = random.nextInt(100)+1;
-                if (createSpace < 76) {
+                if (createSpace < 76 || atleastAreas > 0) {
                     //usableSpace = HorizSptPnt - heightB;
                     //if (usableSpace >= minArea) {
-                        leftChild = new BSPDungeon(heightB, HorizSptPnt - 1, widthB, widthE);
-                        System.out.println(leftChild);
-                        leftChild.generateSpaces();
+                    atleastAreas--;
+                    leftChild = new BSPDungeon(heightB, HorizSptPnt - 1, widthB, widthE, atleastAreas);
+                    System.out.println(leftChild);
+                    leftChild.generateSpaces();
                     //}
                 }
                 random = new Random();
                 createSpace = random.nextInt(100)+1;
-                if (createSpace < 76) {
+                if (createSpace < 76 || atleastAreas > 0) {
                     //usableSpace = heightE - HorizSptPnt;
                     //if (usableSpace >= minArea) { //HORIZONTAL RIGHT
-                        rightChild = new BSPDungeon(HorizSptPnt + 1, heightE, widthB, widthE);
-                        System.out.println(rightChild);
-                        rightChild.generateSpaces();
+                    atleastAreas--;
+                    rightChild = new BSPDungeon(HorizSptPnt + 1, heightE, widthB, widthE, atleastAreas);
+                    System.out.println(rightChild);
+                    rightChild.generateSpaces();
                     //}
                 }
 
@@ -66,22 +69,24 @@ public class BSPDungeon {
             } else { //vERTICAL
                 random = new Random();
                 createSpace = random.nextInt(100)+1;
-                if (createSpace < 76) {
+                if (createSpace < 76 || atleastAreas > 0) {
                     //usableSpace = VertSptPnt - widthB;
                     //if (usableSpace >= minArea) { //VERTICAL SPLIT LEFT
-                        leftChild = new BSPDungeon(heightB, heightE, widthB, VertSptPnt - 1);
-                        System.out.println(leftChild);
-                        leftChild.generateSpaces();
+                    atleastAreas--;
+                    leftChild = new BSPDungeon(heightB, heightE, widthB, VertSptPnt - 1, atleastAreas);
+                    System.out.println(leftChild);
+                    leftChild.generateSpaces();
                     //}
                 }
                 random = new Random();
                 createSpace = random.nextInt(100)+1;
-                if (createSpace < 76) {
+                if (createSpace < 76 || atleastAreas > 0) {
                     //usableSpace = widthE - VertSptPnt;
                     //if (usableSpace >= minArea) { //VERTICAL SPLIT RIGHT
-                        rightChild = new BSPDungeon(heightB, heightE, VertSptPnt + 1, widthE);
-                        System.out.println(rightChild);
-                        rightChild.generateSpaces();
+                    atleastAreas--;
+                    rightChild = new BSPDungeon(heightB, heightE, VertSptPnt + 1, widthE, atleastAreas);
+                    System.out.println(rightChild);
+                    rightChild.generateSpaces();
                     //}
                 }
 
@@ -92,22 +97,24 @@ public class BSPDungeon {
             //HorizSptPnt = random.nextInt(heightE+1);
             random = new Random();
             createSpace = random.nextInt(100)+1;
-            if (createSpace < 76) {
+            if (createSpace < 76 || atleastAreas > 0) {
                 //usableSpace = HorizSptPnt - heightB;
                 //if (usableSpace >= minArea) { //HORIZONTAL SPLIT LEFT
-                    leftChild = new BSPDungeon(heightB, HorizSptPnt - 1, widthB, widthE);
-                    System.out.println(leftChild);
-                    leftChild.generateSpaces();
+                atleastAreas--;
+                leftChild = new BSPDungeon(heightB, HorizSptPnt - 1, widthB, widthE, atleastAreas);
+                System.out.println(leftChild);
+                leftChild.generateSpaces();
                 //}
             }
             random = new Random();
             createSpace = random.nextInt(100)+1;
-            if (createSpace < 76) {
+            if (createSpace < 76 || atleastAreas > 0) {
                 //usableSpace = heightE - HorizSptPnt;
                 //if (usableSpace >= minArea) { //HORIZONTAL SPLIT RIGHT
-                    rightChild = new BSPDungeon(HorizSptPnt + 1, heightE, widthB, widthE);
-                    System.out.println(rightChild);
-                    rightChild.generateSpaces();
+                atleastAreas--;
+                rightChild = new BSPDungeon(HorizSptPnt + 1, heightE, widthB, widthE, atleastAreas);
+                System.out.println(rightChild);
+                rightChild.generateSpaces();
                 //}
             }
 
@@ -116,22 +123,24 @@ public class BSPDungeon {
             //VertSptPnt = random.nextInt(widthE+1);
             random = new Random();
             createSpace = random.nextInt(100)+1;
-            if (createSpace < 76) {
+            if (createSpace < 76 || atleastAreas > 0) {
                 //usableSpace = VertSptPnt - widthB;
                 //if (usableSpace >= minArea) { //VERTICAL SPLIT LEFT
-                    leftChild = new BSPDungeon(heightB, heightE, widthB, VertSptPnt - 1);
-                    System.out.println(leftChild);
-                    leftChild.generateSpaces();
+                atleastAreas--;
+                leftChild = new BSPDungeon(heightB, heightE, widthB, VertSptPnt - 1, atleastAreas);
+                System.out.println(leftChild);
+                leftChild.generateSpaces();
                 //}
             }
             random = new Random();
             createSpace = random.nextInt(100)+1;
-            if (createSpace < 76) {
+            if (createSpace < 76 || atleastAreas > 0) {
                 //usableSpace = widthE - VertSptPnt;
                 //if (usableSpace >= minArea) { //VERTICAL SPLIT RIGHT
-                    rightChild = new BSPDungeon(heightB, heightE, VertSptPnt + 1, widthE);
-                    System.out.println(rightChild);
-                    rightChild.generateSpaces();
+                atleastAreas--;
+                rightChild = new BSPDungeon(heightB, heightE, VertSptPnt + 1, widthE, atleastAreas);
+                System.out.println(rightChild);
+                rightChild.generateSpaces();
                 //}
             }
         }
@@ -235,7 +244,7 @@ public class BSPDungeon {
         int h = 27;
         int w = 40;
         //BSPDungeon d = new BSPDungeon(0, 9, 0, 11);
-        BSPDungeon d = new BSPDungeon(1, h-1, 1, w-1);
+        BSPDungeon d = new BSPDungeon(1,h-1,1,w-1,6);
         d.generateSpaces();
         System.out.println("tästä alas");
         d.printChild(d);
