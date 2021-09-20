@@ -6,8 +6,8 @@ public class BSPDungeon {
     BSPDungeon leftChild;
     BSPDungeon rightChild;
     Random random = new Random();
-    int splitHiPoint;
-    int splitWiPoint;
+    int HorizSptPnt;
+    int VertSptPnt;
     int createSpace;
 
     public BSPDungeon(int y, int h, int x, int w) {
@@ -21,115 +21,122 @@ public class BSPDungeon {
     }
 
     public void generateSpaces() {
-        //int boundHi = heightE - (minArea * 2) + 1;
-        //int boundWi = widthE - (minArea * 2) + 1;
-        //System.out.println("hiBo: " + boundHi);
-        //System.out.println("wiBo: " + boundWi);
         System.out.println((heightE - heightB) + ":" + (widthE - widthB));
-        //if (boundHi > 0 && boundWi > 0) {
-        //splitHiPoint = random.nextInt(boundHi) + minArea;
-        //splitWiPoint = random.nextInt(boundWi) + minArea;
-        splitHiPoint = random.nextInt(heightE+1-heightB)+heightB;
-        splitWiPoint = random.nextInt(widthE+1-widthB)+widthB;
+        random = new Random();
+        //HorizSptPnt = random.nextInt(heightE+1-heightB)+heightB;
+        int boundH = heightE-(heightB+3)-2;
+        if (boundH > 0) {
+            HorizSptPnt = random.nextInt(boundH)+(heightB+3);
+        }
+        random = new Random();
+        //VertSptPnt = random.nextInt(widthE+1-widthB)+widthB;
+        int boundW = widthE-(widthB+3)-2;
+        if (boundW > 0) {
+            VertSptPnt = random.nextInt(boundW)+(widthB+3);
+        }
         int usableSpace;
 
-        if (heightE > minArea && widthE > minArea) {
+        if (heightE-heightB >= minArea*2 && widthE-widthB >= minArea*2) {
+            random = new Random();
             boolean splitDirection = random.nextBoolean(); //true horizontal, false vertical
 
             if (splitDirection) { //HORIZONTAL LEFT
+                random = new Random();
                 createSpace = random.nextInt(100)+1;
                 if (createSpace < 76) {
-                    usableSpace = splitHiPoint - heightB;
-                    if (usableSpace >= minArea) {
-                        leftChild = new BSPDungeon(heightB, splitHiPoint - 1, widthB, widthE);
+                    //usableSpace = HorizSptPnt - heightB;
+                    //if (usableSpace >= minArea) {
+                        leftChild = new BSPDungeon(heightB, HorizSptPnt - 1, widthB, widthE);
                         System.out.println(leftChild);
                         leftChild.generateSpaces();
-                    }
+                    //}
                 }
+                random = new Random();
                 createSpace = random.nextInt(100)+1;
                 if (createSpace < 76) {
-                    usableSpace = heightE - splitHiPoint;
-                    if (usableSpace >= minArea) { //HORIZONTAL RIGHT
-                        rightChild = new BSPDungeon(splitHiPoint + 1, heightE, widthB, widthE);
+                    //usableSpace = heightE - HorizSptPnt;
+                    //if (usableSpace >= minArea) { //HORIZONTAL RIGHT
+                        rightChild = new BSPDungeon(HorizSptPnt + 1, heightE, widthB, widthE);
                         System.out.println(rightChild);
                         rightChild.generateSpaces();
-                    }
+                    //}
                 }
 
 
-            } else {
+            } else { //vERTICAL
+                random = new Random();
                 createSpace = random.nextInt(100)+1;
                 if (createSpace < 76) {
-                    usableSpace = splitWiPoint - widthB;
-                    if (usableSpace >= minArea) { //VERTICAL SPLIT LEFT
-                        leftChild = new BSPDungeon(heightB, heightE, widthB, splitWiPoint - 1);
+                    //usableSpace = VertSptPnt - widthB;
+                    //if (usableSpace >= minArea) { //VERTICAL SPLIT LEFT
+                        leftChild = new BSPDungeon(heightB, heightE, widthB, VertSptPnt - 1);
                         System.out.println(leftChild);
                         leftChild.generateSpaces();
-                    }
+                    //}
                 }
+                random = new Random();
                 createSpace = random.nextInt(100)+1;
                 if (createSpace < 76) {
-                    usableSpace = widthE - splitWiPoint;
-                    if (usableSpace >= minArea) { //VERTICAL SPLIT RIGHT
-                        rightChild = new BSPDungeon(heightB, heightE, splitWiPoint + 1, widthE);
+                    //usableSpace = widthE - VertSptPnt;
+                    //if (usableSpace >= minArea) { //VERTICAL SPLIT RIGHT
+                        rightChild = new BSPDungeon(heightB, heightE, VertSptPnt + 1, widthE);
                         System.out.println(rightChild);
                         rightChild.generateSpaces();
-                    }
+                    //}
                 }
 
             }
 
 
-        } else if (heightE >= minArea) { //split horizontally
-            //splitHiPoint = random.nextInt(heightE+1);
+        } else if (heightE-heightB >= minArea*2) { //split horizontally
+            //HorizSptPnt = random.nextInt(heightE+1);
+            random = new Random();
             createSpace = random.nextInt(100)+1;
             if (createSpace < 76) {
-                usableSpace = splitHiPoint - heightB;
-                if (usableSpace >= minArea) { //HORIZONTAL SPLIT LEFT
-                    leftChild = new BSPDungeon(heightB, splitHiPoint - 1, widthB, widthE);
+                //usableSpace = HorizSptPnt - heightB;
+                //if (usableSpace >= minArea) { //HORIZONTAL SPLIT LEFT
+                    leftChild = new BSPDungeon(heightB, HorizSptPnt - 1, widthB, widthE);
                     System.out.println(leftChild);
                     leftChild.generateSpaces();
-                }
+                //}
             }
+            random = new Random();
             createSpace = random.nextInt(100)+1;
             if (createSpace < 76) {
-                usableSpace = heightE - splitHiPoint;
-                if (usableSpace >= minArea) { //HORIZONTAL SPLIT RIGHT
-                    rightChild = new BSPDungeon(splitHiPoint + 1, heightE, widthB, widthE);
+                //usableSpace = heightE - HorizSptPnt;
+                //if (usableSpace >= minArea) { //HORIZONTAL SPLIT RIGHT
+                    rightChild = new BSPDungeon(HorizSptPnt + 1, heightE, widthB, widthE);
                     System.out.println(rightChild);
                     rightChild.generateSpaces();
-                }
+                //}
             }
 
 
-        } else if (widthE >= minArea) { //split vertically
-            //splitWiPoint = random.nextInt(widthE+1);
+        } else if (widthE-widthB >= minArea*2) { //split vertically
+            //VertSptPnt = random.nextInt(widthE+1);
+            random = new Random();
             createSpace = random.nextInt(100)+1;
             if (createSpace < 76) {
-                usableSpace = splitWiPoint - widthB;
-                if (usableSpace >= minArea) { //VERTICAL SPLIT LEFT
-                    leftChild = new BSPDungeon(heightB, heightE, widthB, splitWiPoint - 1);
+                //usableSpace = VertSptPnt - widthB;
+                //if (usableSpace >= minArea) { //VERTICAL SPLIT LEFT
+                    leftChild = new BSPDungeon(heightB, heightE, widthB, VertSptPnt - 1);
                     System.out.println(leftChild);
                     leftChild.generateSpaces();
-                }
+                //}
             }
+            random = new Random();
             createSpace = random.nextInt(100)+1;
             if (createSpace < 76) {
-                usableSpace = widthE - splitWiPoint;
-                if (usableSpace >= minArea) { //VERTICAL SPLIT RIGHT
-                    rightChild = new BSPDungeon(heightB, heightE, splitWiPoint + 1, widthE);
+                //usableSpace = widthE - VertSptPnt;
+                //if (usableSpace >= minArea) { //VERTICAL SPLIT RIGHT
+                    rightChild = new BSPDungeon(heightB, heightE, VertSptPnt + 1, widthE);
                     System.out.println(rightChild);
                     rightChild.generateSpaces();
-                }
+                //}
             }
-
-
-
-        } else {
-            System.out.println("jabadabaduu");
-            return;
         }
-        //}
+
+        System.out.println("jabadabaduu");
     }
 
     @Override
@@ -142,59 +149,115 @@ public class BSPDungeon {
                 '}';
     }
 
-    public void printTree(BSPDungeon d) {
+    public void printChild(BSPDungeon d) {
         if (d.leftChild != null) {
             System.out.println(d.leftChild);
-            printTree(d.leftChild);
+            printChild(d.leftChild);
         }
         if (d.rightChild != null) {
             System.out.println(d.rightChild);
-            printTree(d.rightChild);
+            printChild(d.rightChild);
+        }
+    }
+
+    private static void printTree(String[][] luolasto, int toY, int toX) {
+        for (int y = 0; y < toY; y++) {
+            for (int x = 0; x < toX; x++) {
+                System.out.print(luolasto[y][x]);
+            }
+            System.out.println();
         }
     }
 
     public String[][] writeTree(BSPDungeon d, String[][] r) {
         if (d.leftChild != null) {
-            for (int y = d.leftChild.heightB; y < d.leftChild.heightE; y++) {
-                for (int x = d.leftChild.widthB; x < d.leftChild.widthE; x++) {
-                    r[y][x] = ".";
+            //yLÄ
+            //if (d.leftChild.heightB >= 0 && d.leftChild.widthB >= 0 && d.leftChild.widthE+2 >= 39) {
+                for (int x = d.leftChild.widthB; x <= d.leftChild.widthE; x++) {
+                    r[d.leftChild.heightB][x] = "#";
                 }
-            }
+            //}
+            //aLA
+            //if (d.leftChild.heightE+2 <= 26 && d.leftChild.widthB >= 0 && d.leftChild.widthE+2 <= 39) {
+                for (int x = d.leftChild.widthB; x <= d.leftChild.widthE; x++) {
+                    r[d.leftChild.heightE][x] = "#";
+                }
+            //}
+            //vASEN
+            //if (d.leftChild.widthB >= 0) {
+                for (int y = d.leftChild.heightB; y <= d.leftChild.heightE; y++) {
+                    r[y][d.leftChild.widthB] = "#";
+                }
+            //}
+            //oIKEA
+            //if (d.leftChild.widthE+2 <= 39) {
+                for (int y = d.leftChild.heightB; y <= d.leftChild.heightE; y++) {
+                    r[y][d.leftChild.widthE] = "#";
+                }
+            //}
+            //printTree(r);
+            //System.out.println();
             r = writeTree(d.leftChild, r);
         }
         if (d.rightChild != null) {
-            for (int y = d.rightChild.heightB; y < d.rightChild.heightE; y++) {
-                for (int x = d.rightChild.widthB; x < d.rightChild.widthE; x++) {
-                    r[y][x] = ".";
+            //yLÄ
+           //if (d.rightChild.heightB >= 0 && d.rightChild.widthB >= 0 && d.rightChild.widthE+2 >= 39) {
+                for (int x = d.rightChild.widthB; x <= d.rightChild.widthE; x++) {
+                    r[d.rightChild.heightB][x] = "#";
                 }
-            }
-            r = writeTree(d.rightChild, r);
+            //}
+            //aLA
+            //if (d.rightChild.heightE+2 <= 26 && d.rightChild.widthB >= 0 && d.rightChild.widthE+2 <= 39) {
+                for (int x = d.rightChild.widthB; x <= d.rightChild.widthE; x++) {
+                    r[d.rightChild.heightE][x] = "#";
+                }
+            //}
+            //vASEN
+            //if (d.rightChild.widthB >= 0) {
+                for (int y = d.rightChild.heightB; y <= d.rightChild.heightE; y++) {
+                    r[y][d.rightChild.widthB] = "#";
+                }
+            //}
+            //oIKEA
+            //if (d.rightChild.widthE+2 <= 39) {
+                for (int y = d.rightChild.heightB; y <= d.rightChild.heightE; y++) {
+                    r[y][d.rightChild.widthE] = "#";
+                }
+            //}
+                //printTree(r);
+                //System.out.println();
+                r = writeTree(d.rightChild, r);
         }
+        //System.out.println();
         return r;
     }
     public static void main(String[] args) {
+        int h = 27;
+        int w = 40;
         //BSPDungeon d = new BSPDungeon(0, 9, 0, 11);
-        BSPDungeon d = new BSPDungeon(0, 26, 0, 39);
+        BSPDungeon d = new BSPDungeon(1, h-1, 1, w-1);
         d.generateSpaces();
         System.out.println("tästä alas");
-        d.printTree(d);
-        //String[][] luolasto = new String[10][12];
-        String[][] luolasto = new String[26][39];
-        //for (int i = 0; i < 10; i++) {
-        for (int i = 0; i < 26; i++) {
-            Arrays.fill(luolasto[i], "#");
+        d.printChild(d);
+        String[][] luolasto = new String[h+1][w+1];
+        for (int i = 0; i < h; i++) {
+            Arrays.fill(luolasto[i], ".");
+        }
+        for (int i = 0; i < w; i++) {
+            luolasto[0][i] = ".";
+            luolasto[h-1][i] = ".";
+        }
+        for (int i = 0; i < h; i++) {
+            luolasto[i][0] = ".";
+            luolasto[i][w-1] = ".";
         }
 
         luolasto = d.writeTree(d, luolasto);
-        //for (int y = 0; y < 10; y++) {
-        for (int y = 0; y < 26; y++) {
-            //for (int x = 0; x < 12; x++) {
-            for (int x = 0; x < 39; x++) {
-                System.out.print(luolasto[y][x]);
-            }
-            System.out.println();
-        }
+        System.out.println();
+        printTree(luolasto, h, w);
 
 
     }
+
+
 }
