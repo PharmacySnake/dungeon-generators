@@ -19,7 +19,6 @@ public class BSPDungeon {
         nodes.generateChildren();
 
         nodesToList(nodes);
-        //Collections.reverse(selectedNodes);
         for (Node node : selectedNodes) {
             System.out.println(node);
         }
