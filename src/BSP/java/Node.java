@@ -1,7 +1,7 @@
 import java.util.Random;
 
 public class Node {
-    int minArea = 3;
+    int minArea;
     int heightB, heightE, widthB, widthE;
     Node left;
     Node right;
@@ -20,140 +20,106 @@ public class Node {
         this.left = null;
         this.atleastAreas = atLeast;
         this.chance = chance;
+        minArea = 5;
 
     }
 
     public void generateChildren() {
         //System.out.println((heightE - heightB) + ":" + (widthE - widthB));
         random = new Random();
-        int boundH = heightE - (heightB + 3) - 2;
+        int boundH = (heightE - (minArea - 1)) - (heightB + (minArea - 1)) + 1;
         if (boundH > 0) {
-            horizSptPnt = random.nextInt(boundH) + (heightB + 3);
+            horizSptPnt = random.nextInt(boundH) + (heightB + (minArea - 1));
         }
         random = new Random();
-        int boundW = widthE - (widthB + 3) - 2;
+        int boundW = (widthE - (minArea - 1)) - (widthB + (minArea -1)) + 1;
         if (boundW > 0) {
-            vertSptPnt = random.nextInt(boundW) + (widthB + 3);
-        }
-        random = new Random();
-        int horiSptBufferL = Math.max(Math.max(horizSptPnt-(heightB+2), ), 0);
-        int horiSptBufferR = Math.max(Math.max((heightE - 1) - (horizSptPnt + 1), ), 0);
-        int vertSptBufferL = Math.max(Math.max(vertSptPnt - (widthB + 2), ), 0);
-        int vertSptBufferR = Math.max(Math.max((widthE - 1) - (vertSptPnt + 1), ), 0);
-
-        if (horiSptBufferL > 0) {
-            horiSptBufferL = random.nextInt(horiSptBufferL) + (heightB + 2);
-        }
-        if (horiSptBufferR > 0) {
-            horiSptBufferR = random.nextInt(horiSptBufferR) + (horizSptPnt + 1);
-        }
-        if (vertSptBufferL > 0) {
-            vertSptBufferL = random.nextInt(vertSptBufferL) + (widthB + 2);
-        }
-        if (vertSptBufferR > 0) {
-            vertSptBufferR = random.nextInt(vertSptBufferR) + vertSptPnt + 1;
+            vertSptPnt = random.nextInt(boundW) + (widthB + (minArea - 1));
         }
 
-        if (heightE > heightB && widthE > widthB && heightE - heightB >= minArea * 2 && widthE-widthB >= minArea * 2) {
+        if (heightE > heightB && widthE > widthB && heightE - heightB >= minArea * 2 + 1 && widthE-widthB >= minArea * 2 + 1) {
             random = new Random();
             boolean splitDirection = random.nextBoolean(); //true horizontal, false vertical
 
             if (splitDirection) { //HORIZONTAL LEFT
                 random = new Random();
                 createSpace = random.nextInt(100) + 1;
-
-                if ((createSpace < chance || atleastAreas > 0)
-                        && horizSptPnt - horiSptBufferL - widthB >= 3 && horizSptPnt - horiSptBufferL > widthB) {
+                if ((createSpace < chance || atleastAreas > 0) &&
+                        (horizSptPnt - heightB >= minArea - 1 && widthE - widthB >= minArea - 1)) {
                     atleastAreas--;
-                    //left = new Node(heightB, horizSptPnt - 1, widthB, widthE, atleastAreas, chance);
-                    left = new Node(heightB, horizSptPnt - horiSptBufferL, widthB, widthE, atleastAreas, chance);
-                    //System.out.println(left);
+                    left = new Node(heightB, horizSptPnt, widthB, widthE, atleastAreas, chance);
+                    System.out.println(left);
                     left.generateChildren();
                 }
+
                 random = new Random();
                 createSpace = random.nextInt(100) + 1;
-                if ((createSpace < chance || atleastAreas > 0)
-                        && heightE - horizSptPnt - horiSptBufferR >= 3 && heightE > horizSptPnt - horiSptBufferR) {
+                if ((createSpace < chance || atleastAreas > 0) &&
+                        (heightE - horizSptPnt >= minArea - 1 && widthE - widthB >= minArea - 1)) {
                     atleastAreas--;
-                    //right = new Node(horizSptPnt + 1, heightE, widthB, widthE, atleastAreas, chance);
-                    right = new Node(horizSptPnt + horiSptBufferR, heightE, widthB, widthE, atleastAreas, chance);
-                    //System.out.println(right);
+                    right = new Node(horizSptPnt, heightE, widthB, widthE, atleastAreas, chance);
+                    System.out.println(right);
                     right.generateChildren();
                 }
 
             } else { //vERTICAL
                 random = new Random();
                 createSpace = random.nextInt(100) + 1;
-
-                if ((createSpace < chance || atleastAreas > 0)
-                        && vertSptPnt - vertSptBufferL - widthB >= 3 && vertSptPnt - vertSptBufferL > widthB) {
+                if ((createSpace < chance || atleastAreas > 0) &&
+                        (heightE - heightB >= minArea - 1 && vertSptPnt - widthB >= minArea - 1)) {
                     atleastAreas--;
-                    //left = new Node(heightB, heightE, widthB, vertSptPnt - 1, atleastAreas, chance);
-                    left = new Node(heightB, heightE, widthB, vertSptPnt - vertSptBufferL, atleastAreas, chance);
-                    //System.out.println(left);
+                    left = new Node(heightB, heightE, widthB, vertSptPnt, atleastAreas, chance);
+                    System.out.println(left);
                     left.generateChildren();
                 }
-                
                 random = new Random();
                 createSpace = random.nextInt(100) + 1;
-                
-                if ((createSpace < chance || atleastAreas > 0)
-                        && widthE - vertSptPnt - vertSptBufferR >= 3 && widthE > vertSptPnt - vertSptBufferR) {
+                if ((createSpace < chance || atleastAreas > 0) &&
+                        (heightE - heightB >= minArea - 1 && widthE - vertSptPnt >= minArea - 1)) {
                     atleastAreas--;
-                    //right = new Node(heightB, heightE, vertSptPnt + 1, widthE, atleastAreas, chance);
-                    right = new Node(heightB, heightE, vertSptPnt + vertSptBufferR, widthE, atleastAreas, chance);
-                    //System.out.println(right);
+                    right = new Node(heightB, heightE, vertSptPnt, widthE, atleastAreas, chance);
+                    System.out.println(right);
                     right.generateChildren();
                 }
             }
             
-        } else if (heightE - heightB >= minArea * 2) { //split horizontally
+        } else if (heightE - heightB >= minArea * 2 + 1) { //split horizontally
             random = new Random();
             createSpace = random.nextInt(100) + 1;
-            
-            if ((createSpace < chance || atleastAreas > 0)
-                    && horizSptPnt - horiSptBufferL - widthB >= 3 && horizSptPnt - horiSptBufferL > widthB) {
+            if ((createSpace < chance || atleastAreas > 0) &&
+                    (horizSptPnt - heightB >= minArea - 1 && widthE - widthB >= minArea - 1)) {
                 atleastAreas--;
-                //left = new Node(heightB, horizSptPnt - 1, widthB, widthE, atleastAreas, chance);
-                left = new Node(heightB, horizSptPnt - horiSptBufferL, widthB, widthE, atleastAreas, chance);
-                //System.out.println(left);
+                left = new Node(heightB, horizSptPnt, widthB, widthE, atleastAreas, chance);
+                System.out.println(left);
                 left.generateChildren();
             }
-            
             random = new Random();
             createSpace = random.nextInt(100) + 1;
-            
-            if ((createSpace < chance || atleastAreas > 0)
-                    && heightE - horizSptPnt - horiSptBufferR >= 3 && heightE > horizSptPnt - horiSptBufferR) {
+            if ((createSpace < chance || atleastAreas > 0) &&
+                    (heightE - horizSptPnt >= minArea - 1 && widthE - widthB >= minArea - 1)) {
                 atleastAreas--;
-                //right = new Node(horizSptPnt + 1, heightE, widthB, widthE, atleastAreas, chance);
-                right = new Node(horizSptPnt + horiSptBufferR, heightE, widthB, widthE, atleastAreas, chance);
-                //System.out.println(right);
+                right = new Node(horizSptPnt, heightE, widthB, widthE, atleastAreas, chance);
+                System.out.println(right);
                 right.generateChildren();
             }
             
         } else if (widthE - widthB >= minArea * 2) { //split vertically
             random = new Random();
             createSpace = random.nextInt(100) + 1;
-            
-            if ((createSpace < chance || atleastAreas > 0)
-                    && vertSptPnt - vertSptBufferL - widthB >= 3 && vertSptPnt - vertSptBufferL > widthB) {
+            if ((createSpace < chance || atleastAreas > 0) &&
+                    (heightE - heightB >= minArea - 1 && vertSptPnt - widthB >= minArea - 1)) {
                 atleastAreas--;
-                //left = new Node(heightB, heightE, widthB, vertSptPnt - 1, atleastAreas, chance);
-                left = new Node(heightB, heightE, widthB, vertSptPnt - vertSptBufferL, atleastAreas, chance);
-                //System.out.println(left);
+                left = new Node(heightB, heightE, widthB, vertSptPnt, atleastAreas, chance);
+                System.out.println(left);
                 left.generateChildren();
             }
-            
             random = new Random();
             createSpace = random.nextInt(100) + 1;
-            
-            if ((createSpace < chance || atleastAreas > 0)
-                    && widthE - vertSptPnt - vertSptBufferR >= 3 && widthE > vertSptPnt - vertSptBufferR) {
+            if ((createSpace < chance || atleastAreas > 0) &&
+                    (heightE - heightB >= minArea - 1 && widthE - vertSptPnt >= minArea - 1)) {
                 atleastAreas--;
-                //right = new Node(heightB, heightE, vertSptPnt + 1, widthE, atleastAreas, chance);
-                right = new Node(heightB, heightE, vertSptPnt + vertSptBufferR, widthE, atleastAreas, chance);
-                //System.out.println(right);
+                right = new Node(heightB, heightE, vertSptPnt, widthE, atleastAreas, chance);
+                System.out.println(right);
                 right.generateChildren();
             }
         }
@@ -179,7 +145,7 @@ public class Node {
                 printChild(d.right);
             }
         }
-        
+
     public void flatten(Node d) {
             if (d == null) return;
             Node left = d.left;
@@ -196,54 +162,56 @@ public class Node {
 
         }
 
-    public void nodesToRooms(Node d) {
-            int y;// = 9999;
-            int height;// = 9999;
-            int x;// = 9999;
-            int width;// = 9999;
-            //System.out.println("Y: "+d.heightB+"-"+d.heightE+", X: "+d.widthB+"-"+d.widthE);
+    public void shrinkNodes(Node d) {
+        int y;
+        int height;
+        int x;
+        int width;
+        int centerY = ((d.heightE-d.heightB) / 2) + d.heightB;
+        int centerX = ((d.widthE-d.widthB) / 2) + d.widthB;
+        System.out.println("Y: "+d.heightB+"-"+d.heightE+", X: "+d.widthB+"-"+d.widthE);
 
-            if (d.heightE - d.heightB >= 3) {
-                //int max = d.heightE-2;
+        if (centerY - d.heightB > 1) {
+            //int max = d.heightE-2;
                 //y = random.nextInt(d.heightE - d.heightB - 1) + d.heightB;
                 //System.out.println("Y: "+d.heightB+"-"+d.heightE);
                 //int a = d.heightE - 1 - d.heightB;
                 //System.out.println("hA: " + a);
-                y = random.nextInt(d.heightE - 1 - d.heightB) + d.heightB;
-            } else {
-                y = d.heightB;
-            }
-            if (d.heightE - y >= 3) {
-                //System.out.println("y: "+y);
+            y = random.nextInt(centerY - (d.heightB + 1)) + (d.heightB + 1);
+        } else {
+            y = d.heightB + 1;
+        }
+        if (d.heightE - centerY > 1) {
+            //System.out.println("y: "+y);
                 //int b = d.heightE - (y+2);// - 1;
                 //System.out.println("hB: "+b);
-                height = d.heightE - random.nextInt(d.heightE - (y + 2));//+y;// - 1)+y;// + d.heightB;
-            } else {
-                height = d.heightE;
-            }
-            if (d.widthE - d.widthB >= 3) {
-                //int a = d.widthE - 2 - d.widthB;
+            height = random.nextInt(d.heightE - (centerY+1)) + (centerY + 1);
+        } else {
+            height = d.heightE - 1;
+        }
+        if (centerX - d.widthB > 1) {
+            //int a = d.widthE - 2 - d.widthB;
                 //System.out.println("X: "+d.widthB+"-"+d.widthE);
                 //System.out.println("wA: " + a);
-                x = random.nextInt(d.widthE - 2 - d.widthB) + d.widthB;
-            } else {
-                x = d.widthB;
-            }
-            if (d.widthE - x >= 3) {
-                //System.out.println("x: "+x);
+            x = random.nextInt(centerX - (d.widthB + 1)) + (d.widthB + 1);
+        } else {
+            x = d.widthB + 1;
+        }
+        if (d.widthE - x > 1) {
+            //System.out.println("x: "+x);
                 //int b = d.widthE - (x+2);// - 1;
                 //System.out.println("wB: "+b);
-                width = d.widthE - random.nextInt(d.widthE - (x + 2));//+x;// - 1)+x;// + d.widthB;
-            } else {
-                width = d.widthE;
-            }
-
-            d.heightB = y;
-            d.heightE = height;
-            d.widthB = x;
-            d.widthE = width;
-
-            //System.out.println("y: "+y+"-"+height+", x: "+x+"-"+width);
-            //System.out.println();
+            width = random.nextInt(d.widthE - (centerX+1)) + (centerX + 1);
+        } else {
+            width = d.widthE - 1;
         }
+
+        d.heightB = y;
+        d.heightE = height;
+        d.widthB = x;
+        d.widthE = width;
+
+        //System.out.println("y: "+y+"-"+height+", x: "+x+"-"+width);
+            //System.out.println();
+    }
 }

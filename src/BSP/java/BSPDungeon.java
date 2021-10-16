@@ -17,53 +17,44 @@ public class BSPDungeon {
         selectedNodes = new LinkedList<>();
 
         nodes.generateChildren();
-
+        System.out.println();
         nodesToList(nodes);
         for (Node node : selectedNodes) {
             System.out.println(node);
         }
         System.out.println(selectedNodes.size());
         selectNodes();
-        /*for (Node node : selectedNodes) {
-            System.out.println(node);
-        }*/
-        //System.out.println(selectedNodes.size());
+
         selectedNodes.removeAll(Collections.singleton(null));
         for (Node node : selectedNodes) {
             System.out.println(node);
         }
         System.out.println(selectedNodes.size());
 
-        //nodes.printChild(nodes);
         initializeDungeon(height, dungeon);
 
-        nodesToDungeon(nodes);
-        printDungeon();
+        for (int i = 1; i < selectedNodes.size(); i++) {
+            createHalls(selectedNodes.get(i-1), selectedNodes.get(i));
+        }
 
+        /*for (Node node : selectedNodes) {
+            nodesToDungeon2(node);
+        }*/
+        printDungeon();
         System.out.println();
         System.out.println("lopulliset huoneet");
 
-
-        //nodes.flatten(nodes);
-
-        //LinkedList<Node> flattenedNodes = new LinkedList<>();
-
-
-        //nodesToList(nodes);
-        //flatNodesToList(flattenedNodes);
-
-        /*for (Node node : flattenedNodes) {
-            nodes.nodesToRooms(node);
-        }*/
         for (Node node : selectedNodes) {
-            nodes.nodesToRooms(node);
+            nodes.shrinkNodes(node);
         }
         for (Node node : selectedNodes) {
           //  if (reservedRoom(node, dungeon)) {
                 drawDungeon(node);
             //}
         }
-
+        for (int i = 1; i < selectedNodes.size(); i++) {
+            createHalls(selectedNodes.get(i-1), selectedNodes.get(i));
+        }
         printDungeon();
     }
 
@@ -99,7 +90,6 @@ public class BSPDungeon {
                     previousHeightE = node.heightE;
                     previousWidthB = node.widthB;
                     previousWidthE = node.widthE;
-                    ;
                 }
             }
         }
@@ -119,6 +109,47 @@ public class BSPDungeon {
             }
             System.out.println();
         }
+    }
+
+    public void nodesToDungeon2(Node d) {
+        //if (d.left != null) {
+            //yLÄ
+            for (int x = d.widthB; x <= d.widthE; x++) {
+                dungeon[d.heightB][x] = "#";
+            }
+            //aLA
+            for (int x = d.widthB; x <= d.widthE; x++) {
+                dungeon[d.heightE][x] = "#";
+            }
+            //vASEN
+            for (int y = d.heightB; y <= d.heightE; y++) {
+                dungeon[y][d.widthB] = "#";
+            }
+            //oIKEA
+            for (int y = d.heightB; y <= d.heightE; y++) {
+                dungeon[y][d.widthE] = "#";
+            }
+            //nodesToDungeon(d.left);
+        //}
+        /*if (d.right != null) {
+            //yLÄ
+            for (int x = d.right.widthB; x <= d.right.widthE; x++) {
+                dungeon[d.right.heightB - 1][x] = "#";
+            }
+            //aLA
+            for (int x = d.right.widthB; x <= d.right.widthE; x++) {
+                dungeon[d.right.heightE + 1][x] = "#";
+            }
+            //vASEN
+            for (int y = d.right.heightB; y <= d.right.heightE; y++) {
+                dungeon[y][d.right.widthB - 1] = "#";
+            }
+            //oIKEA
+            for (int y = d.right.heightB; y <= d.right.heightE; y++) {
+                dungeon[y][d.right.widthE + 1] = "#";
+            }
+            //nodesToDungeon(d.right);
+        }*/
     }
 
     public void nodesToDungeon(Node d) {
@@ -162,40 +193,49 @@ public class BSPDungeon {
         }
     }
 
-    public String[][] createHalls(int y1, int x1, int y2, int x2, String[][] r) {
-        int pointY1 = y1 / 2;
-        int pointX1 = x1 / 2;
-        int pointY2 = y2 / 2;
-        int pointX2 = x2 / 2;
+    public void createHalls(Node d1, Node d2) {
+        int centerY1 = ((d1.heightE - d1.heightB) / 2) + d1.widthB;
+        int centerX1 = ((d1.widthE - d1.widthB) / 2) + d1.widthB;
+        int centerY2 = ((d2.heightE - d2.heightB) / 2) + d2.widthB;
+        int centerX2 = ((d2.widthE - d2.widthB) / 2) + d2.widthB;
+        int maxY = Math.max(((d1.heightE - d1.heightB) / 2) + d1.heightB, ((d2.heightE - d2.heightB) / 2) + d2.heightB);
+        int maxX = Math.max(((d1.widthE - d1.widthB) / 2) + d1.widthB, ((d2.widthE - d2.widthB) / 2) + d2.widthB);
+        int minY = Math.min(((d1.heightE - d1.heightB) / 2) + d1.heightB, ((d2.heightE - d2.heightB) / 2) + d2.heightB);
+        int minX = Math.min(((d1.widthE - d1.widthB) / 2) + d1.widthB, ((d2.widthE - d2.widthB) / 2) + d2.widthB);//*/
 
-        if (pointX2 - pointX1 < 0) {
-            if (pointY2 - pointY1 < 0) {
-                if (Math.random() < 0.5) {
-                    for (int y = pointY1; y <= pointY2; y++) {
-                        r[y][pointX1 - 1] = "#";
-                        r[y][pointX1] = ".";
-                        r[y][pointX1 + 1] = "#";
-                    }
-                    for (int x = pointX1; x <= pointX2; x++) {
-                        r[pointY2][x] = "#";
-                        r[pointY2][x] = ".";
-                        r[pointY2][x] = "#";
-                    }
-                } else {
-                    for (int y = pointY1; y <= pointY2; y++) {
-                        r[y][pointX2 - 1] = "#";
-                        r[y][pointX2] = ".";
-                        r[y][pointX2 + 1] = "#";
-                    }
-                    for (int x = pointX1; x <= pointX2; x++) {
-                        r[pointY1][x] = "#";
-                        r[pointY1][x] = ".";
-                        r[pointY1][x] = "#";
-                    }
-                }
+        System.out.println(centerY1);
+        System.out.println(centerX1);
+        System.out.println(centerY2);
+        System.out.println(centerX2);
+        System.out.println("MaxY: "+maxY);
+        System.out.println("MaxX: "+maxX);
+        System.out.println("MinY: "+minY);
+        System.out.println("MinX: "+minX);//*/
+
+        //if (Math.random() < 0.5) {
+            for (int y = minY; y <= maxY; y++) {
+                    if (dungeon[y][minX - 1] != "." && dungeon[y][minX - 1] != "║") dungeon[y][minX - 1] = "#";
+                    dungeon[y][minX] = ".";
+                    if (dungeon[y][minX + 1] != "." && dungeon[y][minX - 1] != "║") dungeon[y][minX + 1] = "#";
             }
-        }
-        return r;
+            for (int x = minX; x <= maxX; x++) {
+                    if (dungeon[minY - 1][x] != "." && dungeon[minY - 1][x] != "║") dungeon[minY - 1][x] = "#";
+                    dungeon[minY][x] = ".";
+                    if (dungeon[minY + 1][x] != "." && dungeon[minY - 1][x] != "║") dungeon[minY + 1][x] = "#";
+            }
+            if (dungeon[minY - 1][minX -1] != ".") dungeon[minY - 1][minX - 1] = "#";
+        //} else {
+            /*for (int y = minY; y <= maxY; y++) {
+                dungeon[y][centerX2 - 1] = "#";
+                dungeon[y][centerX2] = ".";
+                dungeon[y][centerX2 + 1] = "#";
+            }
+            for (int x = minX; x <= maxX; x++) {
+                dungeon[centerY1][x] = "#";
+                dungeon[centerY1][x] = ".";
+                dungeon[centerY1][x] = "#";
+            }*/
+        //}
     }
 
     public boolean reservedRoom(Node d, String[][] r) {
@@ -217,20 +257,36 @@ public class BSPDungeon {
         //║╔╗╚╝═░
 
         //corners
-        dungeon[d.heightB - 1][d.widthB - 1] = "╔";
+        System.out.println("h:"+d.heightB+":"+d.heightE);
+        System.out.println("w:"+d.widthB+":"+d.widthE);
+        System.out.println();
+        /*dungeon[d.heightB - 1][d.widthB - 1] = "╔";
         dungeon[d.heightB - 1][d.widthE + 1] = "╗";
         dungeon[d.heightE + 1][d.widthB - 1] = "╚";
-        dungeon[d.heightE + 1][d.widthE + 1] = "╝";
+        dungeon[d.heightE + 1][d.widthE + 1] = "╝";//*/
+
+        dungeon[d.heightB - 1][d.widthB - 1] = "#";
+        dungeon[d.heightB - 1][d.widthE + 1] = "#";
+        dungeon[d.heightE + 1][d.widthB - 1] = "#";
+        dungeon[d.heightE + 1][d.widthE + 1] = "#";
         //top & bottom
-        for (int x = d.widthB; x <= d.widthE; x++) {
+        /*for (int x = d.widthB; x <= d.widthE; x++) {
             dungeon[d.heightB - 1][x] = "═";
             dungeon[d.heightE + 1][x] = "═";
+        }*/
+        for (int x = d.widthB; x <= d.widthE; x++) {
+            dungeon[d.heightB - 1][x] = "#";
+            dungeon[d.heightE + 1][x] = "#";
         }
         //left & right
-        for (int y = d.heightB; y <= d.heightE; y++) {
+        /*for (int y = d.heightB; y <= d.heightE; y++) {
             dungeon[y][d.widthB - 1] = "║";
             dungeon[y][d.widthE + 1] = "║";
         }//*/
+        for (int y = d.heightB; y <= d.heightE; y++) {
+            dungeon[y][d.widthB - 1] = "#";
+            dungeon[y][d.widthE + 1] = "#";
+        }
         //floor
         for (int y = d.heightB; y <= d.heightE; y++) {
             for (int x = d.widthB; x <= d.widthE; x++) {
