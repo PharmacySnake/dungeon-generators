@@ -83,17 +83,21 @@ public class VoronoiDungeon {
         }//*/
         trimEdgeHeads();
         System.out.println();
-        for (Edge e : trimmedEdges) {
-            System.out.println(e);
-        }
         System.out.println();
         bresenhamLinesToDungeon();
+
         printDungeon();
         //System.out.println();
         defineSpace();
         System.out.println();
         shrinkRooms();
+        for (Room r : rooms) {
+            System.out.println(r+"\n");
+        }
+        fillArray(height, width);
         drawDungeon();
+        printDungeon();
+        createHalls();
     }
 
     public void drawDungeon() {
@@ -153,6 +157,8 @@ public class VoronoiDungeon {
             r.heightE = hE;
             r.widthB = wB;
             r.widthE = wE;
+            r.centerY = ((hE - hB) / 2) + hB;
+            r.centerX = ((wE - wB) / 2) + wB;
             System.out.println("height: "+hB+"-"+hE+", width: "+wB+"-"+wE);
             System.out.println();
         }
@@ -174,22 +180,22 @@ public class VoronoiDungeon {
             widthE = px;
 
             while (!hB || !hE || !wB || !wE) {
-                if (heightB-1 > 0 && dungeon[heightB-1][px] != "+") {
+                if (heightB-1 > 0 && !dungeon[heightB-1][px].equals("+")) {
                     heightB--;
                 } else {
                     hB = true;
                 }
-                if (heightE+1 < height-1 && dungeon[heightE+1][px] != "+") {
+                if (heightE+1 < height-1 && !dungeon[heightE+1][px].equals("+")) {
                     heightE++;
                 } else {
                     hE = true;
                 }
-                if (widthB-1 > 0 && dungeon[py][widthB-1] != "+") {
+                if (widthB-1 > 0 && !dungeon[py][widthB-1].equals("+")) {
                     widthB--;
                 } else {
                     wB = true;
                 }
-                if (widthE+1 < width-1 && dungeon[py][widthE+1] != "+") {
+                if (widthE+1 < width-1 && !dungeon[py][widthE+1].equals("+")) {
                     widthE++;
                 } else {
                     wE = true;
@@ -204,48 +210,89 @@ public class VoronoiDungeon {
         }
     }
 
+    public void createHalls() {
+        for (int i = 1; i < rooms.size(); i++) {
+            if (i == rooms.size() -1) {
+                System.out.println();
+            }
+            int centerY1 = Math.round(rooms.get(i-1).centerY);
+            int centerX1 = Math.round(rooms.get(i-1).centerX);
+            int centerY2 = Math.round(rooms.get(i).centerY);
+            int centerX2 = Math.round(rooms.get(i).centerX);
+            int maxY = Math.max(centerY1, centerY2);
+            int maxX = Math.max(centerX1, centerX2);
+            int minY = Math.min(centerY1, centerY2);
+            int minX = Math.min(centerX1, centerX2);//*/
+
+            System.out.println("ROOM1 "+rooms.get(i-1)+"\n" +
+                    "ROOM2 "+rooms.get(i)+"\n");
+            /*System.out.println("MaxY: " + maxY);
+            System.out.println("MaxX: " + maxX);
+            System.out.println("MinY: " + minY);
+            System.out.println("MinX: " + minX);//*/
+
+        //if (Math.random() < 0.5) {
+            for (int y = minY; y <= maxY; y++) {
+                if (dungeon[y][minX - 1] != ".") dungeon[y][minX - 1] = "#";
+                dungeon[y][minX] = ".";
+                if (dungeon[y][minX + 1] != ".") dungeon[y][minX + 1] = "#";
+                //printDungeon();
+            }
+            for (int x = minX; x <= maxX; x++) {
+                if (dungeon[minY - 1][x] != ".") dungeon[minY - 1][x] = "#";
+                dungeon[minY][x] = ".";
+                if (dungeon[minY + 1][x] != ".") dungeon[minY + 1][x] = "#";
+                //printDungeon();
+            }
+            if (dungeon[minY - 1][minX - 1] != ".") dungeon[minY - 1][minX - 1] = "#";
+        }
+    }
+
     private void bresenhamLinesToDungeon() {
         System.out.println("hw: "+height+", "+width);
-        for (Edge e : trimmedEdges) {
-            int y1 = (int)Math.round(e.start.y);
-            int y2 = (int)Math.round(e.end.y);
-            int x1 = (int)Math.round(e.start.x);
-            int x2 = (int)Math.round(e.end.x);
-            System.out.println("("+y1+","+x1+") - ("+y2+","+x2+")");
+        for (Edge e : edges) {
+            if (e.start.y < height && e.start.y >= 0 && e.start.x < width && e.start.x >= 0
+                    && e.end.y < height && e.end.y >= 0 && e.end.x < width && e.end.x >= 0) {
+                int y1 = (int) Math.round(e.start.y);
+                int y2 = (int) Math.round(e.end.y);
+                int x1 = (int) Math.round(e.start.x);
+                int x2 = (int) Math.round(e.end.x);
+                System.out.println("(" + y1 + "," + x1 + ") - (" + y2 + "," + x2 + ")");
 
-            int d = 0;
-            int dy1 = Math.abs(y1 - y2);
-            int dx1 = Math.abs(x1 - x2);
-            int dy2 = 2*dy1;
-            int dx2 = 2*dx1;
+                int d = 0;
+                int dy1 = Math.abs(y1 - y2);
+                int dx1 = Math.abs(x1 - x2);
+                int dy2 = 2 * dy1;
+                int dx2 = 2 * dx1;
 
-            int iy = y1 < y2 ? 1 : -1;
-            int ix = x1 < x2 ? 1 : -1;
+                int iy = y1 < y2 ? 1 : -1;
+                int ix = x1 < x2 ? 1 : -1;
 
-            int y = y1;
-            int x = x1;
+                int y = y1;
+                int x = x1;
 
-            if (dx1 >= dy1) {
-                while (true) {
-                    dungeon[y][x] = "+";
-                    if (x == x2) break;
+                if (dx1 >= dy1) {
+                    while (true) {
+                        dungeon[y][x] = "+";
+                        if (x == x2) break;
 
-                    x += ix;
-                    d += dy2;
-                    if (d > dx1) {
-                        y += iy;
-                        d -= dx2;
-                    }
-                }
-            } else {
-                while (true) {
-                    dungeon[y][x] = "+";
-                    if (y == y2) break;
-                    y+= iy;
-                    d += dx2;
-                    if (d > dy1) {
                         x += ix;
-                        d -= dy2;
+                        d += dy2;
+                        if (d > dx1) {
+                            y += iy;
+                            d -= dx2;
+                        }
+                    }
+                } else {
+                    while (true) {
+                        dungeon[y][x] = "+";
+                        if (y == y2) break;
+                        y += iy;
+                        d += dx2;
+                        if (d > dy1) {
+                            x += ix;
+                            d -= dy2;
+                        }
                     }
                 }
             }
@@ -257,164 +304,115 @@ public class VoronoiDungeon {
         double startX;
         double endY;
         double endX;
-        double aEy;
-        double aEx;
-        double bEx;
-        double bEy;
-        double cEy;
-        double cEx;
-        double dEx;
-        double dEy;
+        Edge verticalDir = new Edge(new Point(0, 0), new Point(0, width - 1));
+        Edge verticalDir2 = new Edge(new Point(height - 1, 0), new Point(height - 1, width - 1));
+        Edge horizontalDir = new Edge(new Point(0, 0), new Point(height - 1, 0));
+        Edge horizontalDir2 = new Edge(new Point(0, width - 1), new Point(height - 1, width - 1));
+
         for (Edge e : edges) {
             startY = e.start.y;
             startX = e.start.x;
             endY = e.end.y;
             endX = e.end.x;
 
-            System.out.println("startY: "+startY+", startX: "+startX);
-            System.out.println("endY: "+endY+", endX: "+endX);
-            System.out.println("yint: "+e.yint+", xint: "+(e.slope*e.start.x)+", slope: "+e.slope+"\n" +
-                    "dir: "+e.direction.y+", "+e.direction.x+"\n-----");
+            //System.out.println("startY: " + Math.round(startY) + ", startX: " + Math.round(startX));
+            //System.out.println("endY: " + Math.round(endY) + ", endX: " + Math.round(endX));
+            System.out.println("startY: " + startY + ", startX: " + startX);
+            System.out.println("endY: " + endY + ", endX: " + endX);
 
-            if (e.start.y == -24.999999999999986 && e.end.y == 4.357142857142861) {
-                System.out.println("jou1");
-            } else if (e.start.y == -3.8333333333333304 && e.end.y == 7.052631578947366) {
-                System.out.println("jou2");
-            } else if (e.start.y == 32.15240641711229 && e.end.y == -0.0999999999999801) {
-                System.out.println("jou3");
-            } else if (e.start.y == -0.07480314960630707 && e.end.y == 5.805785123966956) {
-                System.out.println("jou4");
-            } else if (e.start.y == -3.8333333333333304 && e.end.y == 13.535714285714288) {
-                System.out.println("jou5");
-            } else if (e.start.y == -0.0999999999999801 && e.end.y == 32.15240641711229) {
-                System.out.println("jou6");
-            } else if (e.start.y == 32.15240641711229 && e.end.y == 56.31853455066312) {
-                System.out.println("jou7");
-            } else if (e.start.y == 30.210526315789473 && e.end.y == 55.8021646826684) {
-                System.out.println("jou8");
-            }
-            if (((e.start.y < 0 || e.start.y > height-1) && (e.start.x < 0 || e.start.x > width-1))
-                    && ((e.end.y < 0 || e.end.y > height-1) && (e.end.x < 0 || e.end.x > width-1))) {
-                System.out.println("jou9");
-            }
-            if (((e.start.y < height-1 && e.start.y > 0) && (e.end.y < width-1 && e.end.y > 0))
-                    && ((e.start.x < width-1 && e.start.x > 0) && (e.end.x < width-1 && e.end.x > 0))) {
-                trimmedEdges.add(e);
+            //startY: -0.0999999999999801, startX: 63.1
+            //endY: 32.15240641711229, endX: 42.3663101604278
+            if (startY == -0.0999999999999801 && startX == 63.1 && endY == 32.15240641711229 && endX == 42.3663101604278) {
+                System.out.println("jouuuu");
+            }//*/
 
-            } else if ((e.start.y <= height-1 && e.start.y >= 0) && (e.start.x <= width-1 && e.start.x >= 0)) {
-                if (endY >= height-1 || endY <= 0 || endX >= width-1 || endX <= 0) {
-                    aEy = height-1;
-                    aEx = (aEy + (-e.yint)) / e.slope;
-                    bEx = 0;
-                    bEy = e.yint;
-                    cEy = 0;
-                    cEx = -e.yint / e.slope;
-                    dEx = width-1; // width
-                    dEy = e.slope * dEx + e.yint;
-                    System.out.println("a: "+aEy+", "+aEx+"\n" +
-                            "b: "+bEy+", "+bEx+"\n" +
-                            "c: "+cEy+", "+cEx+"\n" +
-                            "d: "+dEy+", "+dEx);
+            /*System.out.println("vertical direction: " + getEdgeIntersection(e, verticalDir));
+            System.out.println("vertical direction 2: " + getEdgeIntersection(e, verticalDir2));
+            System.out.println("horizontal direction: " + getEdgeIntersection(e, horizontalDir));
+            System.out.println("horizontal direction 2: " + getEdgeIntersection(e, horizontalDir2));//*/
+            Point topIntercept = getEdgeIntersection(e, verticalDir);
+            Point bottomIntercept = getEdgeIntersection(e, verticalDir2);
+            double vertCrossPoint = ((e.start.x - e.end.x) * (verticalDir.start.y - verticalDir.end.y)) - ((e.start.y - e.end.y) * (verticalDir.start.x - verticalDir.end.x));
+            System.out.println("vertical xp: " + vertCrossPoint);
+            double horiCrossPoint = ((e.start.x - e.end.x) * (horizontalDir.start.y - horizontalDir.end.y)) - ((e.start.y - e.end.y) * (horizontalDir.start.x - horizontalDir.end.x));
+            System.out.println("horizontal xp: " + horiCrossPoint);
 
-                        // NEG-NEG
-                    if (e.direction.y < 0 && e.direction.x < 0) {
-                        endY = height - 1; // height
-                        endX = (endY + (-e.yint)) / e.slope;
-                        if (endX > width-1) {
-                            endX = width - 1;
-                            endY = (e.slope * endX) + e.yint;
-                        }
+            if ((((e.start.y < height - 1 && e.start.y > 0) && (e.end.y < height - 1 && e.end.y > 0))
+                    && ((e.start.x < width - 1 && e.start.x > 0) && (e.end.x < width - 1 && e.end.x > 0)))
+                    || (((startX < 0 && endX < 0) || startX > width - 1 && endX > width - 1)
+                    || ((startY < 0 && endY < 0) || (startY > height - 1 && endY > height - 1)))) {
+                System.out.println("ei käsitelty\n");
 
-                        // NEG-POS
-                    } else if (e.direction.y < 0 && e.direction.x > 0) {
-                        endX = 0; // width
-                        endY = e.yint;
-                        if (endY > height-1) {
-                            endY = height - 1; // height
-                            endX = (endY + (-e.yint)) / e.slope;
-                        }
-
-                        // POS-NEG
-                    } else if (e.direction.y > 0 && e.direction.x < 0) {
-                        endY = 0;
-                        endX = -e.yint / e.slope;
-
-                        // POS-POS
-                    } else {
-                        endX = width-1;
-                        endY = (e.slope * endX) + e.yint;
-                        if (endY > height-1) {
-                            endY = 0;
-                            endX = -e.yint / e.slope;
-                        }
-                    }
-
-                    System.out.println("endY: "+endY+", endX: "+endX);
-                    System.out.println();
-
-                    Edge newE = new Edge(new Point(startY, startX), e.siteLeft, e.siteRight);
-                    newE.end = new Point(endY, endX);
-                    trimmedEdges.add(newE);
+            } else if (startY < height - 1 && startY > 0) {
+                //if (vertCrossPoint < 0 && horiCrossPoint < 0) {
+                if (endY < 0) {
+                    endY = topIntercept.y;
+                    endX = topIntercept.x;
+                    /*System.out.println("starty: " + startY + ", startx: " + startX);
+                    System.out.println("endy: "+endY+", endx: "+endX);
+                    System.out.println();//*/
+                } else if (endY > height - 1) {
+                    endY = bottomIntercept.y;
+                    endX = bottomIntercept.x;
+                    /*System.out.println("starty: " + startY + ", startx: " + startX);
+                    System.out.println("endy: "+endY+", endx: "+endX);
+                    System.out.println();//*/
                 }
 
-            } else {
-                System.out.println("REVERSEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
-                startY = e.start.y;
-                startX = e.start.x;
-                endY = e.end.y;
-                endX = e.end.x;
-                System.out.println("startY: "+startY+", startX: "+startX);
-                System.out.println("endY: "+endY+", endX: "+endX);
-                System.out.println("yint: "+e.yint+", xint: "+(e.slope*e.start.x)+", slope: "+e.slope+"\n" +
-                        "dir: "+e.direction.y+", "+e.direction.x+"\n-------");
+                e.end.y = endY;
+                e.end.x = endX;
 
-                if (startY >= width-1 || startY <= 0 || startX >= width-1 || startX <= 0) {
-                    aEy = 0;
-                    aEx = -e.yint / e.slope;
-                    bEx = 0;
-                    bEy = e.yint;
-                    cEy = height-1;
-                    cEx = (cEy + (-e.yint)) / e.slope;
-                    dEx = width-1; // width
-                    dEy = e.slope * dEx + e.yint;
-                    System.out.println("a: "+aEy+", "+aEx+"\n" +
-                            "b: "+bEy+", "+bEx+"\n" +
-                            "c: "+cEy+", "+cEx+"\n" +
-                            "d: "+dEy+", "+dEx);
-
-                        // NEG-NEG
-                    if (e.direction.y < 0 && e.direction.x < 0) {
-                        startY = 0;
-                        startX = -e.yint / e.slope;
-
-
-                        // NEG-POS
-                    } else if (e.direction.y < 0 && e.direction.x > 0) {
-                        startY = 0;
-                        startX = -e.yint / e.slope;
-
-                        // POS-NEG
-                    } else if (e.direction.y > 0 && e.direction.x < 0) {
-                        startY = height - 1; // height
-                        startX = (startY + (-e.yint)) / e.slope;
-                        if (startX > width-1) {
-                            startX = width - 1;
-                            startY = (e.slope * startX) + e.yint;
-                        }
-
-                        // POS-POS
-                    } else {
-                        startX = width-1;
-                        startY = (e.slope * startX) + e.yint;
-                    }
-
-                    System.out.println("endY: "+startY+", endX: "+startX);
-                    System.out.println();
-
-                    Edge newE = new Edge(new Point(startY, startX), e.siteLeft, e.siteRight);
-                    newE.end = new Point(endY, endX);
-                    trimmedEdges.add(newE);
+            } else if (endY < height - 1 && endY > 0) {
+                if (startY < 0) {
+                    startY = topIntercept.y;
+                    startX = topIntercept.x;
+                    /*System.out.println("starty: " + startY + ", startx: " + startX);
+                    System.out.println("endy: "+endY+", endx: "+endX);
+                    System.out.println();//*/
+                } else if (startY > height - 1) {
+                    startY = bottomIntercept.y;
+                    startX = bottomIntercept.x;
+                    /*System.out.println("starty: " + startY + ", startx: " + startX);
+                    System.out.println("endy: "+endY+", endx: "+endX);
+                    System.out.println();//*/
                 }
+                e.start.y = startY;
+                e.start.x = startX;
+
+            } else if ((startY < 0 && endY > height-1) || startY > height-1 && endY < 0) {
+                /*System.out.println("nega to pos tai pos to nega");
+                System.out.println("starty: " + startY + ", startx: " + startX);
+                System.out.println("endy: "+endY+", endx: "+endX);//*/
+                if (startY < 0) {
+                    startY = topIntercept.y;
+                    startX = topIntercept.x;
+                    /*System.out.println("starty: " + startY + ", startx: " + startX);
+                    System.out.println("endy: "+endY+", endx: "+endX);
+                    System.out.println();//*/
+                } else if (startY > height - 1) {
+                    startY = bottomIntercept.y;
+                    startX = bottomIntercept.x;
+                    /*System.out.println("starty: " + startY + ", startx: " + startX);
+                    System.out.println("endy: "+endY+", endx: "+endX);
+                    System.out.println();//*/
+                }
+                if (endY < 0) {
+                    endY = topIntercept.y;
+                    endX = topIntercept.x;
+                    /*System.out.println("starty: " + startY + ", startx: " + startX);
+                    System.out.println("endy: "+endY+", endx: "+endX);
+                    System.out.println();//*/
+                } else if (endY > height - 1) {
+                    endY = bottomIntercept.y;
+                    endX = bottomIntercept.x;
+                    /*System.out.println("starty: " + startY + ", startx: " + startX);
+                    System.out.println("endy: "+endY+", endx: "+endX);
+                    System.out.println();//*/
+                }
+                e.start.y = startY;
+                e.start.x = startX;
+                e.end.y = endY;
+                e.end.x = endX;
             }
         }
     }
@@ -529,7 +527,7 @@ public class VoronoiDungeon {
         Parabola c = Parabola.getRightChild(rightParent);
 
         if (a == null || c == null || a.point == c.point) return;
-        if (checkHull(a.point, b.point, c.point) != 1) return;
+        if (orientation(a.point, b.point, c.point) != 1) return;
 
         //edges will intersect to form a vertex for a cirlcle event
         Point start = getEdgeIntersection(leftParent.edge, rightParent.edge);
@@ -554,13 +552,13 @@ public class VoronoiDungeon {
     private Point getEdgeIntersection(Edge a, Edge b) {
         if (b.slope == a.slope && b.yint != a.yint) return null;
 
-        double x = (b.yint - a.yint)/(a.slope - b.slope); //int x: 19
-        double y = a.slope*x + a.yint; //int y: 2
+        double x = (b.yint - a.yint)/(a.slope - b.slope);
+        double y = a.slope*x + a.yint;
 
         return new Point(y, x);
     }
 
-    private int checkHull(Point a, Point b, Point c) {
+    private int orientation(Point a, Point b, Point c) {
         double area = (b.x-a.x)*(c.y-a.y) - (b.y-a.y)*(c.x-a.x);
         if (area < 0) return -1;
         else if (area > 0) return 1;

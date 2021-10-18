@@ -19,6 +19,14 @@ public class Edge {
         yint = mid.y - slope* mid.x;
     }
 
+    public Edge(Point start, Point end) {
+        this.start = start;
+        this.end = end;
+        Point mid = new Point((end.y + start.y) / 2, (start.x + end.x)/2);
+        slope = 0;
+        yint = mid.y - slope*mid.x;
+    }
+
     public String toString() {
         return start + ", " + end;
     }

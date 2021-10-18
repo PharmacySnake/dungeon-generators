@@ -16,6 +16,7 @@ public class Room {
 
     public String toString() {
         return "height: "+heightB+"->"+heightE+", width: "+widthB+"->"+widthE+"\n" +
-                "point: y:"+point.y+", x:"+point.x;
+                "point: y:"+point.y+", x:"+point.x+"\n" +
+                "centerY: "+centerY+", centerX: "+centerX;
     }
 }
