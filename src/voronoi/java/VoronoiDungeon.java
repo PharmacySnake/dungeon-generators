@@ -397,14 +397,14 @@ public class VoronoiDungeon {
             } else if (startY < height - 1 && startY > 0 && startX < width - 1 && startX > 0) {
                 //if (vertCrossPoint < 0 && horiCrossPoint < 0) {
                 if (endY < 0) {
-                    endY = topIntercept.y;
-                    endX = topIntercept.x;
+                    endY = Math.ceil(topIntercept.y);
+                    endX = Math.ceil(topIntercept.x);
                     System.out.println("starty: " + startY + ", startx: " + startX);
                     System.out.println("endy: " + endY + ", endx: " + endX);
                     System.out.println();//*/
                 } else if (endY > height - 1) {
-                    endY = bottomIntercept.y;
-                    endX = bottomIntercept.x;
+                    endY = Math.ceil(bottomIntercept.y);
+                    endX = Math.ceil(bottomIntercept.x);
                     System.out.println("starty: " + startY + ", startx: " + startX);
                     System.out.println("endy: " + endY + ", endx: " + endX);
                     System.out.println();//*/
@@ -415,14 +415,14 @@ public class VoronoiDungeon {
 
             } else if (endY < height - 1 && endY > 0 && endX < width - 1 && endX > 0) {
                 if (startY < 0) {
-                    startY = topIntercept.y;
-                    startX = topIntercept.x;
+                    startY = Math.ceil(topIntercept.y);
+                    startX = Math.ceil(topIntercept.x);
                     System.out.println("starty: " + startY + ", startx: " + startX);
                     System.out.println("endy: " + endY + ", endx: " + endX);
                     System.out.println();//*/
                 } else if (startY > height - 1) {
-                    startY = bottomIntercept.y;
-                    startX = bottomIntercept.x;
+                    startY = Math.ceil(bottomIntercept.y);
+                    startX = Math.ceil(bottomIntercept.x);
                     System.out.println("starty: " + startY + ", startx: " + startX);
                     System.out.println("endy: " + endY + ", endx: " + endX);
                     System.out.println();//*/
@@ -435,27 +435,27 @@ public class VoronoiDungeon {
                 System.out.println("starty: " + startY + ", startx: " + startX);
                 System.out.println("endy: "+endY+", endx: "+endX);//*/
                 if (startY < 0) {
-                    startY = topIntercept.y;
-                    startX = topIntercept.x;
+                    startY = Math.ceil(topIntercept.y);
+                    startX = Math.ceil(topIntercept.x);
                     /*System.out.println("starty: " + startY + ", startx: " + startX);
                     System.out.println("endy: "+endY+", endx: "+endX);
                     System.out.println();//*/
                 } else if (startY > height - 1) {
-                    startY = bottomIntercept.y;
-                    startX = bottomIntercept.x;
+                    startY = Math.ceil(bottomIntercept.y);
+                    startX = Math.ceil(bottomIntercept.x);
                     /*System.out.println("starty: " + startY + ", startx: " + startX);
                     System.out.println("endy: "+endY+", endx: "+endX);
                     System.out.println();//*/
                 }
                 if (endY < 0) {
-                    endY = topIntercept.y;
-                    endX = topIntercept.x;
+                    endY = Math.ceil(topIntercept.y);
+                    endX = Math.ceil(topIntercept.x);
                     /*System.out.println("starty: " + startY + ", startx: " + startX);
                     System.out.println("endy: "+endY+", endx: "+endX);
                     System.out.println();//*/
                 } else if (endY > height - 1) {
-                    endY = bottomIntercept.y;
-                    endX = bottomIntercept.x;
+                    endY = Math.ceil(bottomIntercept.y);
+                    endX = Math.ceil(bottomIntercept.x);
                     /*System.out.println("starty: " + startY + ", startx: " + startX);
                     System.out.println("endy: "+endY+", endx: "+endX);
                     System.out.println();//*/
@@ -467,44 +467,44 @@ public class VoronoiDungeon {
             } else if (startY < 0 || endY > height - 1 || startY > height - 1 || endY < 0
                     || startX < 0 || endX > width - 1 || startX > width - 1 || endX < 0) {
                 if (startY < 0) {
-                    startY = topIntercept.y;
-                    startX = topIntercept.x;
+                    startY = Math.ceil(topIntercept.y);
+                    startX = Math.ceil(topIntercept.x);
                     /*System.out.println("starty: " + startY + ", startx: " + startX);
                     System.out.println("endy: "+endY+", endx: "+endX);
                     System.out.println();//*/
                 } else if (startY > height - 1) {
-                    startY = bottomIntercept.y;
-                    startX = bottomIntercept.x;
+                    startY = Math.ceil(bottomIntercept.y);
+                    startX = Math.ceil(bottomIntercept.x);
                     /*System.out.println("starty: " + startY + ", startx: " + startX);
                     System.out.println("endy: "+endY+", endx: "+endX);
                     System.out.println();//*/
                 }
                 if (endY < 0) {
-                    endY = topIntercept.y;
-                    endX = topIntercept.x;
+                    endY = Math.ceil(topIntercept.y);
+                    endX = Math.ceil(topIntercept.x);
                     /*System.out.println("starty: " + startY + ", startx: " + startX);
                     System.out.println("endy: "+endY+", endx: "+endX);
                     System.out.println();//*/
                 } else if (endY > height - 1) {
-                    endY = bottomIntercept.y;
-                    endX = bottomIntercept.x;
+                    endY = Math.ceil(bottomIntercept.y);
+                    endX = Math.ceil(bottomIntercept.x);
                     /*System.out.println("starty: " + startY + ", startx: " + startX);
                     System.out.println("endy: "+endY+", endx: "+endX);
                     System.out.println();//*/
 
                 } if (startX < 0) {
-                    startY = leftIntercept.x;
-                    startX = leftIntercept.y;
+                    startY = Math.ceil(leftIntercept.x);
+                    startX = Math.ceil(leftIntercept.y);
                 } else if (startX > width - 1) {
-                        startY = rightIntercept.x;
-                        startX = rightIntercept.y;
+                        startY = Math.ceil(rightIntercept.x);
+                        startX = Math.ceil(rightIntercept.y);
 
                 } if (endX < 0) {
-                    endY = leftIntercept.x;
-                    endX = leftIntercept.y;
+                    endY = Math.ceil(leftIntercept.x);
+                    endX = Math.ceil(leftIntercept.y);
                 } else if (endX > width - 1) {
-                    endY = rightIntercept.x;
-                    endX = rightIntercept.y;
+                    endY = Math.ceil(rightIntercept.x);
+                    endX = Math.ceil(rightIntercept.y);
                 }
                 e.start.y = startY;
                 e.start.x = startX;
