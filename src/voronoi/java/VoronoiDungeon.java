@@ -29,18 +29,16 @@ public class VoronoiDungeon {
             System.out.println(p);
         }
         sites = new ArrayList<>();
-        sites.add(new Point(9, 15));
-        sites.add(new Point(12, 5));
-        sites.add(new Point(7, 23));
-        sites.add(new Point(2, 21));
-        sites.add(new Point(14, 17));
-        sites.add(new Point(17, 62));
-        sites.add(new Point(18, 22));
-        sites.add(new Point(3, 20));
-        sites.add(new Point(6, 47));
-        sites.add(new Point(8, 48));
-        sites.add(new Point(1, 46));//*/
-        //sites.add(new Point(9, 71));
+        sites.add(new Point(1, 50));
+        sites.add(new Point(16, 40));
+        sites.add(new Point(10, 57));
+        sites.add(new Point(3, 73));
+        sites.add(new Point(6, 48));
+        sites.add(new Point(11, 30));
+        sites.add(new Point(14, 63));
+        sites.add(new Point(18, 26));
+        sites.add(new Point(5, 45));
+        sites.add(new Point(15, 14));//*/
 
         generateVoronoi();
         printDungeon();
@@ -212,11 +210,8 @@ public class VoronoiDungeon {
 
     public void createHalls() {
         for (int i = 1; i < rooms.size(); i++) {
-            if (i == rooms.size() -1) {
-                System.out.println();
-            }
-            int centerY1 = Math.round(rooms.get(i-1).centerY);
-            int centerX1 = Math.round(rooms.get(i-1).centerX);
+            int centerY1 = Math.round(rooms.get(i - 1).centerY);
+            int centerX1 = Math.round(rooms.get(i - 1).centerX);
             int centerY2 = Math.round(rooms.get(i).centerY);
             int centerX2 = Math.round(rooms.get(i).centerX);
             int maxY = Math.max(centerY1, centerY2);
@@ -224,27 +219,74 @@ public class VoronoiDungeon {
             int minY = Math.min(centerY1, centerY2);
             int minX = Math.min(centerX1, centerX2);//*/
 
-            System.out.println("ROOM1 "+rooms.get(i-1)+"\n" +
-                    "ROOM2 "+rooms.get(i)+"\n");
-            /*System.out.println("MaxY: " + maxY);
+            System.out.println("ROOM1 " + rooms.get(i - 1) + "\n" +
+                    "ROOM2 " + rooms.get(i) + "\n");
+            System.out.println("MaxY: " + maxY);
             System.out.println("MaxX: " + maxX);
             System.out.println("MinY: " + minY);
             System.out.println("MinX: " + minX);//*/
 
-        //if (Math.random() < 0.5) {
-            for (int y = minY; y <= maxY; y++) {
-                if (dungeon[y][minX - 1] != ".") dungeon[y][minX - 1] = "#";
-                dungeon[y][minX] = ".";
-                if (dungeon[y][minX + 1] != ".") dungeon[y][minX + 1] = "#";
-                //printDungeon();
+            double rnd = Math.random();
+
+            if ((centerY1 < centerY2 && centerX1 > centerX2)
+                    || (centerY1 > centerY2 && centerX1 < centerX2)) {
+                if (rnd < 0.5) {// minY, minX
+                    for (int y = minY; y <= maxY; y++) {
+                        if (!dungeon[y][minX - 1].equals(".")) dungeon[y][minX - 1] = "#";
+                        dungeon[y][minX] = ".";
+                        if (!dungeon[y][minX + 1].equals(".")) dungeon[y][minX + 1] = "#";
+                    }
+                    for (int x = minX; x <= maxX; x++) {
+                        if (!dungeon[minY - 1][x].equals(".")) dungeon[minY - 1][x] = "#";
+                        dungeon[minY][x] = ".";
+                        if (!dungeon[minY + 1][x].equals(".")) dungeon[minY + 1][x] = "#";
+                    }
+                    if (!dungeon[minY - 1][minX - 1].equals(".")) dungeon[minY - 1][minX - 1] = "%";
+
+                } else {// maxY, maxX
+                    for (int y = minY; y <= maxY; y++) {
+                        if (!dungeon[y][maxX - 1].equals(".")) dungeon[y][maxX - 1] = "#";
+                        dungeon[y][maxX] = ".";
+                        if (!dungeon[y][maxX + 1].equals(".")) dungeon[y][maxX + 1] = "#";
+                    }
+                    for (int x = minX; x <= maxX; x++) {
+                        if (!dungeon[maxY - 1][x].equals(".")) dungeon[maxY - 1][x] = "#";
+                        dungeon[maxY][x] = ".";
+                        if (!dungeon[maxY + 1][x].equals(".")) dungeon[maxY + 1][x] = "#";
+                    }
+                    if (!dungeon[maxY + 1][maxX + 1].equals(".")) dungeon[maxY + 1][maxX + 1] = "¤";
+
+                }
+            } else if ((centerY1 < centerY2 && centerX1 < centerX2)
+                    || (centerY1 > centerY2 && centerX1 > centerX2)) {
+                if (rnd < 0.5) {// minY, maxX
+                    for (int y = minY; y <= maxY; y++) {
+                        if (!dungeon[y][maxX - 1].equals(".")) dungeon[y][maxX - 1] = "#";
+                        dungeon[y][maxX] = ".";
+                        if (!dungeon[y][maxX + 1].equals(".")) dungeon[y][maxX + 1] = "#";
+                    }
+                    for (int x = minX; x <= maxX; x++) {
+                        if (!dungeon[minY - 1][x].equals(".")) dungeon[minY - 1][x] = "#";
+                        dungeon[minY][x] = ".";
+                        if (!dungeon[minY + 1][x].equals(".")) dungeon[minY + 1][x] = "#";
+                    }
+                    if (!dungeon[minY - 1][maxX + 1].equals(".")) dungeon[minY - 1][maxX + 1] = "&";
+
+                } else {// maxY, minX
+                    for (int y = minY; y <= maxY; y++) {
+                        if (!dungeon[y][minX - 1].equals(".")) dungeon[y][minX - 1] = "#";
+                        dungeon[y][minX] = ".";
+                        if (!dungeon[y][minX + 1].equals(".")) dungeon[y][minX + 1] = "#";
+                    }
+                    for (int x = minX; x <= maxX; x++) {
+                        if (!dungeon[maxY - 1][x].equals(".")) dungeon[maxY - 1][x] = "#";
+                        dungeon[maxY][x] = ".";
+                        if (!dungeon[maxY + 1][x].equals(".")) dungeon[maxY + 1][x] = "#";
+                    }
+                    if (!dungeon[maxY + 1][minX - 1].equals(".")) dungeon[maxY + 1][minX - 1] = "+";
+                }
             }
-            for (int x = minX; x <= maxX; x++) {
-                if (dungeon[minY - 1][x] != ".") dungeon[minY - 1][x] = "#";
-                dungeon[minY][x] = ".";
-                if (dungeon[minY + 1][x] != ".") dungeon[minY + 1][x] = "#";
-                //printDungeon();
-            }
-            if (dungeon[minY - 1][minX - 1] != ".") dungeon[minY - 1][minX - 1] = "#";
+
         }
     }
 
@@ -306,8 +348,10 @@ public class VoronoiDungeon {
         double endX;
         Edge verticalDir = new Edge(new Point(0, 0), new Point(0, width - 1));
         Edge verticalDir2 = new Edge(new Point(height - 1, 0), new Point(height - 1, width - 1));
-        Edge horizontalDir = new Edge(new Point(0, 0), new Point(height - 1, 0));
-        Edge horizontalDir2 = new Edge(new Point(0, width - 1), new Point(height - 1, width - 1));
+        //Edge horizontalDir = new Edge(new Point(0, 0), new Point(height - 1, 0));
+        //Edge horizontalDir2 = new Edge(new Point(0, width - 1), new Point(height - 1, width - 1));
+        Edge horizontalDir = new Edge(new Point(0, 0), new Point(0, height -1));
+        Edge horizontalDir2 = new Edge(new Point(width-1, 0), new Point(width - 1, height - 1));
 
         for (Edge e : edges) {
             startY = e.start.y;
@@ -320,9 +364,8 @@ public class VoronoiDungeon {
             System.out.println("startY: " + startY + ", startX: " + startX);
             System.out.println("endY: " + endY + ", endX: " + endX);
 
-            //startY: -0.0999999999999801, startX: 63.1
-            //endY: 32.15240641711229, endX: 42.3663101604278
-            if (startY == -0.0999999999999801 && startX == 63.1 && endY == 32.15240641711229 && endX == 42.3663101604278) {
+
+            if (startY == 5.292452830188665 && startX == 64.47169811320755 && endY == 45.09385928730832 && endX == 108.25324521603915) {
                 System.out.println("jouuuu");
             }//*/
 
@@ -332,6 +375,14 @@ public class VoronoiDungeon {
             System.out.println("horizontal direction 2: " + getEdgeIntersection(e, horizontalDir2));//*/
             Point topIntercept = getEdgeIntersection(e, verticalDir);
             Point bottomIntercept = getEdgeIntersection(e, verticalDir2);
+            //Point leftIntercept = getEdgeIntersection(e, horizontalDir);
+            //Point rightIntercept = getEdgeIntersection(e, horizontalDir2);
+            Point leftIntercept = getEdgeIntersection(e, horizontalDir);
+            Point rightIntercept = getEdgeIntersection(e, horizontalDir2);
+            System.out.println("topInt: "+topIntercept+"\n" +
+                    "botInt: "+bottomIntercept+"\n" +
+                    "lefInt: "+leftIntercept+"\n" +
+                    "rigInt: "+rightIntercept);
             double vertCrossPoint = ((e.start.x - e.end.x) * (verticalDir.start.y - verticalDir.end.y)) - ((e.start.y - e.end.y) * (verticalDir.start.x - verticalDir.end.x));
             System.out.println("vertical xp: " + vertCrossPoint);
             double horiCrossPoint = ((e.start.x - e.end.x) * (horizontalDir.start.y - horizontalDir.end.y)) - ((e.start.y - e.end.y) * (horizontalDir.start.x - horizontalDir.end.x));
@@ -343,43 +394,43 @@ public class VoronoiDungeon {
                     || ((startY < 0 && endY < 0) || (startY > height - 1 && endY > height - 1)))) {
                 System.out.println("ei käsitelty\n");
 
-            } else if (startY < height - 1 && startY > 0) {
+            } else if (startY < height - 1 && startY > 0 && startX < width - 1 && startX > 0) {
                 //if (vertCrossPoint < 0 && horiCrossPoint < 0) {
                 if (endY < 0) {
                     endY = topIntercept.y;
                     endX = topIntercept.x;
-                    /*System.out.println("starty: " + startY + ", startx: " + startX);
-                    System.out.println("endy: "+endY+", endx: "+endX);
+                    System.out.println("starty: " + startY + ", startx: " + startX);
+                    System.out.println("endy: " + endY + ", endx: " + endX);
                     System.out.println();//*/
                 } else if (endY > height - 1) {
                     endY = bottomIntercept.y;
                     endX = bottomIntercept.x;
-                    /*System.out.println("starty: " + startY + ", startx: " + startX);
-                    System.out.println("endy: "+endY+", endx: "+endX);
+                    System.out.println("starty: " + startY + ", startx: " + startX);
+                    System.out.println("endy: " + endY + ", endx: " + endX);
                     System.out.println();//*/
                 }
 
                 e.end.y = endY;
                 e.end.x = endX;
 
-            } else if (endY < height - 1 && endY > 0) {
+            } else if (endY < height - 1 && endY > 0 && endX < width - 1 && endX > 0) {
                 if (startY < 0) {
                     startY = topIntercept.y;
                     startX = topIntercept.x;
-                    /*System.out.println("starty: " + startY + ", startx: " + startX);
-                    System.out.println("endy: "+endY+", endx: "+endX);
+                    System.out.println("starty: " + startY + ", startx: " + startX);
+                    System.out.println("endy: " + endY + ", endx: " + endX);
                     System.out.println();//*/
                 } else if (startY > height - 1) {
                     startY = bottomIntercept.y;
                     startX = bottomIntercept.x;
-                    /*System.out.println("starty: " + startY + ", startx: " + startX);
-                    System.out.println("endy: "+endY+", endx: "+endX);
+                    System.out.println("starty: " + startY + ", startx: " + startX);
+                    System.out.println("endy: " + endY + ", endx: " + endX);
                     System.out.println();//*/
                 }
                 e.start.y = startY;
                 e.start.x = startX;
 
-            } else if ((startY < 0 && endY > height-1) || startY > height-1 && endY < 0) {
+            } else if ((startY < 0 && endY > height - 1) || startY > height - 1 && endY < 0) {
                 /*System.out.println("nega to pos tai pos to nega");
                 System.out.println("starty: " + startY + ", startx: " + startX);
                 System.out.println("endy: "+endY+", endx: "+endX);//*/
@@ -408,6 +459,52 @@ public class VoronoiDungeon {
                     /*System.out.println("starty: " + startY + ", startx: " + startX);
                     System.out.println("endy: "+endY+", endx: "+endX);
                     System.out.println();//*/
+                }
+                e.start.y = startY;
+                e.start.x = startX;
+                e.end.y = endY;
+                e.end.x = endX;
+            } else if (startY < 0 || endY > height - 1 || startY > height - 1 || endY < 0
+                    || startX < 0 || endX > width - 1 || startX > width - 1 || endX < 0) {
+                if (startY < 0) {
+                    startY = topIntercept.y;
+                    startX = topIntercept.x;
+                    /*System.out.println("starty: " + startY + ", startx: " + startX);
+                    System.out.println("endy: "+endY+", endx: "+endX);
+                    System.out.println();//*/
+                } else if (startY > height - 1) {
+                    startY = bottomIntercept.y;
+                    startX = bottomIntercept.x;
+                    /*System.out.println("starty: " + startY + ", startx: " + startX);
+                    System.out.println("endy: "+endY+", endx: "+endX);
+                    System.out.println();//*/
+                }
+                if (endY < 0) {
+                    endY = topIntercept.y;
+                    endX = topIntercept.x;
+                    /*System.out.println("starty: " + startY + ", startx: " + startX);
+                    System.out.println("endy: "+endY+", endx: "+endX);
+                    System.out.println();//*/
+                } else if (endY > height - 1) {
+                    endY = bottomIntercept.y;
+                    endX = bottomIntercept.x;
+                    /*System.out.println("starty: " + startY + ", startx: " + startX);
+                    System.out.println("endy: "+endY+", endx: "+endX);
+                    System.out.println();//*/
+
+                } if (startX < 0) {
+                    startY = leftIntercept.x;
+                    startX = leftIntercept.y;
+                } else if (startX > width - 1) {
+                        startY = rightIntercept.x;
+                        startX = rightIntercept.y;
+
+                } if (endX < 0) {
+                    endY = leftIntercept.x;
+                    endX = leftIntercept.y;
+                } else if (endX > width - 1) {
+                    endY = rightIntercept.x;
+                    endX = rightIntercept.y;
                 }
                 e.start.y = startY;
                 e.start.x = startX;

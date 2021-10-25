@@ -7,8 +7,12 @@ public class Main {
         int h = 20; //20
         int w = 80; //80 40
         //BSPDungeon d = new BSPDungeon(h,w,5,50);
-        VoronoiDungeon v = new VoronoiDungeon(h,w);
-
+        long start = System.nanoTime();
+        for (int i = 0; i < 100000; i++) {
+            VoronoiDungeon v = new VoronoiDungeon(h,w);
+        }
+        long end = System.nanoTime();
+        System.out.println("nano: "+(end-start));
         /*for (int y = 0; y < h; y++) {
             for (int x = 0; x < w; x++) {
                 System.out.print(v.dungeon[y][x]);

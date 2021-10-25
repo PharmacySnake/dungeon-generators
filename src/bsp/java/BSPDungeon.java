@@ -214,28 +214,16 @@ public class BSPDungeon {
 
         //if (Math.random() < 0.5) {
             for (int y = minY; y <= maxY; y++) {
-                    if (dungeon[y][minX - 1] != "." && dungeon[y][minX - 1] != "║") dungeon[y][minX - 1] = "#";
+                    if (dungeon[y][minX - 1] != ".") dungeon[y][minX - 1] = "#";
                     dungeon[y][minX] = ".";
-                    if (dungeon[y][minX + 1] != "." && dungeon[y][minX - 1] != "║") dungeon[y][minX + 1] = "#";
+                    if (dungeon[y][minX + 1] != ".") dungeon[y][minX + 1] = "#";
             }
             for (int x = minX; x <= maxX; x++) {
-                    if (dungeon[minY - 1][x] != "." && dungeon[minY - 1][x] != "║") dungeon[minY - 1][x] = "#";
+                    if (dungeon[minY - 1][x] != ".") dungeon[minY - 1][x] = "#";
                     dungeon[minY][x] = ".";
-                    if (dungeon[minY + 1][x] != "." && dungeon[minY - 1][x] != "║") dungeon[minY + 1][x] = "#";
+                    if (dungeon[minY + 1][x] != ".") dungeon[minY + 1][x] = "#";
             }
             if (dungeon[minY - 1][minX -1] != ".") dungeon[minY - 1][minX - 1] = "#";
-        //} else {
-            /*for (int y = minY; y <= maxY; y++) {
-                dungeon[y][centerX2 - 1] = "#";
-                dungeon[y][centerX2] = ".";
-                dungeon[y][centerX2 + 1] = "#";
-            }
-            for (int x = minX; x <= maxX; x++) {
-                dungeon[centerY1][x] = "#";
-                dungeon[centerY1][x] = ".";
-                dungeon[centerY1][x] = "#";
-            }*/
-        //}
     }
 
     public boolean reservedRoom(Node d, String[][] r) {
