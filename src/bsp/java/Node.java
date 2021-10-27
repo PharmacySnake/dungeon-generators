@@ -48,7 +48,7 @@ public class Node {
                         (horizSptPnt - heightB >= minArea - 1 && widthE - widthB >= minArea - 1)) {
                     atleastAreas--;
                     left = new Node(heightB, horizSptPnt, widthB, widthE, atleastAreas, chance);
-                    System.out.println(left);
+                    //System.out.println(left);
                     left.generateChildren();
                 }
 
@@ -58,7 +58,7 @@ public class Node {
                         (heightE - horizSptPnt >= minArea - 1 && widthE - widthB >= minArea - 1)) {
                     atleastAreas--;
                     right = new Node(horizSptPnt, heightE, widthB, widthE, atleastAreas, chance);
-                    System.out.println(right);
+                    //System.out.println(right);
                     right.generateChildren();
                 }
 
@@ -69,7 +69,7 @@ public class Node {
                         (heightE - heightB >= minArea - 1 && vertSptPnt - widthB >= minArea - 1)) {
                     atleastAreas--;
                     left = new Node(heightB, heightE, widthB, vertSptPnt, atleastAreas, chance);
-                    System.out.println(left);
+                    //System.out.println(left);
                     left.generateChildren();
                 }
                 random = new Random();
@@ -78,7 +78,7 @@ public class Node {
                         (heightE - heightB >= minArea - 1 && widthE - vertSptPnt >= minArea - 1)) {
                     atleastAreas--;
                     right = new Node(heightB, heightE, vertSptPnt, widthE, atleastAreas, chance);
-                    System.out.println(right);
+                    //System.out.println(right);
                     right.generateChildren();
                 }
             }
@@ -90,7 +90,7 @@ public class Node {
                     (horizSptPnt - heightB >= minArea - 1 && widthE - widthB >= minArea - 1)) {
                 atleastAreas--;
                 left = new Node(heightB, horizSptPnt, widthB, widthE, atleastAreas, chance);
-                System.out.println(left);
+                //System.out.println(left);
                 left.generateChildren();
             }
             random = new Random();
@@ -99,7 +99,7 @@ public class Node {
                     (heightE - horizSptPnt >= minArea - 1 && widthE - widthB >= minArea - 1)) {
                 atleastAreas--;
                 right = new Node(horizSptPnt, heightE, widthB, widthE, atleastAreas, chance);
-                System.out.println(right);
+                //System.out.println(right);
                 right.generateChildren();
             }
             
@@ -110,7 +110,7 @@ public class Node {
                     (heightE - heightB >= minArea - 1 && vertSptPnt - widthB >= minArea - 1)) {
                 atleastAreas--;
                 left = new Node(heightB, heightE, widthB, vertSptPnt, atleastAreas, chance);
-                System.out.println(left);
+                //System.out.println(left);
                 left.generateChildren();
             }
             random = new Random();
@@ -119,7 +119,7 @@ public class Node {
                     (heightE - heightB >= minArea - 1 && widthE - vertSptPnt >= minArea - 1)) {
                 atleastAreas--;
                 right = new Node(heightB, heightE, vertSptPnt, widthE, atleastAreas, chance);
-                System.out.println(right);
+                //System.out.println(right);
                 right.generateChildren();
             }
         }
@@ -169,7 +169,7 @@ public class Node {
         int width;
         int centerY = ((d.heightE-d.heightB) / 2) + d.heightB;
         int centerX = ((d.widthE-d.widthB) / 2) + d.widthB;
-        System.out.println("Y: "+d.heightB+"-"+d.heightE+", X: "+d.widthB+"-"+d.widthE);
+        //System.out.println("Y: "+d.heightB+"-"+d.heightE+", X: "+d.widthB+"-"+d.widthE);
 
         if (centerY - d.heightB > 1) {
             //int max = d.heightE-2;
