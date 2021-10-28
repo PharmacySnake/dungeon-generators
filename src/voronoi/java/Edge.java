@@ -1,12 +1,25 @@
 public class Edge {
-    Point start;
-    Point end;
-    Point siteLeft;
-    Point siteRight;
-    Point direction;
-    Edge neighbor;
-    double slope;
-    double yint;
+    // särmän alkupiste
+    public Point start;
+
+    // särmän loppupiste
+    public Point end;
+
+    // särmän viereiset tontit (sites)
+    public Point siteLeft;
+    public Point siteRight;
+
+    // särmän suunta
+    private Point direction;
+
+
+    public Edge neighbor;
+
+    // kulmakerroin
+    public double slope;
+
+    // y-koordinaatin leikkauspiste
+    public double yint;
 
     public Edge(Point first, Point left, Point right) {
         start = first;

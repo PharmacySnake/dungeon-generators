@@ -11,7 +11,6 @@ public class Visualisation implements Runnable {
     private long bTime;
     private long vTime;
     private JFrame frame;
-    private JTextArea level;
     JTextPane respane1;
     JTextPane respane2;
     int height = 20;
@@ -23,14 +22,12 @@ public class Visualisation implements Runnable {
         this.voronoi = voronoi;
         this.bTime = bspTime;
         this.vTime = voronoiTime;
-        //frame.setSize(width, height);
-        //frame.setVisible(true);
     }
 
     @Override
     public void run() {
         frame = new JFrame("Dungeons");
-        frame.setPreferredSize(new Dimension(1000, 900));
+        frame.setPreferredSize(new Dimension(1000, 1000));
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
         generateComponents(frame.getContentPane());
@@ -67,14 +64,11 @@ public class Visualisation implements Runnable {
         respane1.setBackground(Color.BLACK);
         respane1.setForeground(Color.gray);
 
-
         SimpleAttributeSet attributes = new SimpleAttributeSet();
         StyledDocument style = respane1.getStyledDocument();
-
         StyleConstants.setAlignment(attributes, StyleConstants.ALIGN_CENTER);
         StyleConstants.setLineSpacing(attributes, -0.3f);
         style.setParagraphAttributes(0, 0, attributes, false);//*/
-
 
         respane2 = new JTextPane();
         respane2.setFont(font);
@@ -87,18 +81,32 @@ public class Visualisation implements Runnable {
         StyleConstants.setLineSpacing(attributes, -0.3f);
         style.setParagraphAttributes(0, style.getLength(), attributes, false);//*/
 
+        // infoPanel
+        JTextPane timePane = new JTextPane();
+        timePane.setText("Käytetty aika:\nVoronoi-luolasto: "+((double)vTime/1000000000)+"s, BSP-luolasto: "+((double)bTime/1000000000+"s"));
+        timePane.setFont(font);
+        timePane.setPreferredSize(new Dimension(900, 50));
+        timePane.setBackground(Color.BLACK);
+        timePane.setForeground(Color.WHITE);
+
+        style = timePane.getStyledDocument();
+        StyleConstants.setAlignment(attributes, StyleConstants.ALIGN_CENTER);
+        style.setParagraphAttributes(0, style.getLength(), attributes, false);
 
         c.insets = new Insets(0, 0, 0, 0);
         c.gridx = 0;
         c.gridy = 0;
-        resultsPanel.add(respane1, c);
+        resultsPanel.add(timePane, c);
         c.gridx = 0;
         c.gridy = 1;
+        resultsPanel.add(respane1, c);
+        c.gridx = 0;
+        c.gridy = 2;
         resultsPanel.add(respane2, c);
 
         // Listeners
         searchField.addKeyListener(new EnterListener(searchField));
-        //searchButton.addActionListener(a);
+
         // container
         container.setLayout(new BorderLayout());
         container.add(searchPanel, BorderLayout.NORTH);
@@ -117,8 +125,8 @@ public class Visualisation implements Runnable {
                 if (!text.getText().isEmpty()) {
                     try {
                         int level = Integer.parseInt(text.getText());
-                        String bspDungeon = "";
-                        String voronoiDungeon = "";
+                        String bspDungeon = "BSP\n";
+                        String voronoiDungeon = "Voronoi\n";
 
                         for (int y = 0; y < height; y++) {
                             for (int x = 0; x < width; x++) {
@@ -132,7 +140,7 @@ public class Visualisation implements Runnable {
                         respane1.setText(bspDungeon);
                         respane2.setText(voronoiDungeon);
                     } catch (NumberFormatException numba) {
-                        //System.out.println("numba");
+                        //System.out.println(numba);
                     }
                 }
             }

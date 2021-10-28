@@ -1,20 +1,37 @@
-
 import java.util.List;
 import java.util.PriorityQueue;
 import java.util.ArrayList;
 import java.util.Random;
 
 public class VoronoiDungeon {
-    String[][] dungeon;
-    PriorityQueue<Event> events;
-    List<Room> rooms;
-    List<Point> sites;
-    List<Edge> edges;
-    int height;
-    int width;
-    Parabola root;
-    Random random;
-    double yCurrent;
+    // taulukko joka sisältää luolaston
+    public String[][] dungeon;
+
+    // eventit
+    private PriorityQueue<Event> events;
+
+    // lista luoduista huoneista
+    private List<Room> rooms;
+
+    // lista tonteista
+    private List<Point> sites;
+
+    // lista särmistä
+    private List<Edge> edges;
+
+    // koko luolaston korkeus
+    private int height;
+
+    // koko luolaston leveys
+    private int width;
+
+    private Parabola root;
+
+    // mr. rng
+    private Random random;
+
+    // nykyinen y-koordinaatti
+    private double yCurrent;
 
     public VoronoiDungeon(int height, int width) {
         this.height = height;
@@ -25,49 +42,37 @@ public class VoronoiDungeon {
         fillArray(height, width);
         sites = randomPoints(10);
 
-        /*for (Point p : sites) {
-            System.out.println(p);
-        }*/
-        /*sites = new ArrayList<>();
-        sites.add(new Point(9, 78));
-        sites.add(new Point(11, 55));
-        sites.add(new Point(17, 48));
-        sites.add(new Point(14, 15));
-        sites.add(new Point(4, 20));
-        sites.add(new Point(2, 18));
-        sites.add(new Point(15, 78));
-        sites.add(new Point(6, 17));
-        sites.add(new Point(10, 76));
-        sites.add(new Point(12, 68));//*/
-
         generateVoronoi();
-        //printDungeon();
+        trimEdgeHeads();
+        bresenhamLinesToDungeon();
+        defineSpace();
+        shrinkRooms();
+        fillArray(height, width);
+        drawDungeon();
+        createHalls();
     }
 
+    // tehdään voronoita
     private void generateVoronoi() {
         events = new PriorityQueue<>();
         for (Point p : sites) {
             events.add(new Event(p, Event.SITE_EVENT));
         }
 
-        //process events (sweep line)
-        int count = 0;
+        // käsitellään tapahtumat (events)
         while(!events.isEmpty()) {
             Event e = events.remove();
             yCurrent = e.p.y;
-            count++;
 
             if (e.type == Event.SITE_EVENT) {
-                //System.out.println(count+". SITE_EVENT "+e.p);
                 handleSite(e.p);
             } else {
-                //System.out.println(count+". CIRCLE_EVENT "+e.p);
                 handleCircle(e);
             }
         }
 
         yCurrent = width+height;
-        endEdges(root); //close off any dangling edges
+        endEdges(root);
 
         for (Edge e : edges) {
             if (e.neighbor != null) {
@@ -76,24 +81,10 @@ public class VoronoiDungeon {
             }
         }
 
-        /*for (Edge e : edges) {
-            System.out.println(e);
-        }//*/
-        trimEdgeHeads();
-        bresenhamLinesToDungeon();
 
-        //printDungeon();
-        defineSpace();
-        shrinkRooms();
-        /*for (Room r : rooms) {
-            System.out.println(r+"\n");
-        }*/
-        fillArray(height, width);
-        drawDungeon();
-        //printDungeon();
-        createHalls();
     }
 
+    // piirretään huoneet luolasto-taulukkoon
     public void drawDungeon() {
         for (Room r : rooms) {
             /*System.out.println("h:" + r.heightB + ":" + r.heightE);
@@ -124,6 +115,7 @@ public class VoronoiDungeon {
         }
     }
 
+    // kutistetaan huoneita, mikäli rng suo
     public void shrinkRooms() {
         random = new Random();
 
@@ -159,10 +151,10 @@ public class VoronoiDungeon {
 
     }
 
+    // määritellään mikä kokoinen huone voi alustavasti olla
     private void defineSpace() {
         int heightB, heightE, widthB, widthE;
         boolean hB, hE, wB, wE;
-
 
         for (Point p : sites) {
             hB = hE = wB = wE = false;
@@ -198,12 +190,11 @@ public class VoronoiDungeon {
             if (heightE - heightB >= 2 && widthE - widthB >= 2) {
                 Room room = new Room(heightB, heightE, widthB, widthE, ((heightE-heightB) / 2) + heightB, ((widthE-widthB) / 2) + widthB, p);
                 rooms.add(room);
-                //System.out.println(room);
-                //System.out.println();
             }
         }
     }
 
+    // luodaan käytävät huoneiden välille
     public void createHalls() {
         for (int i = 1; i < rooms.size(); i++) {
             int centerY1 = Math.round(rooms.get(i - 1).centerY);
@@ -213,15 +204,7 @@ public class VoronoiDungeon {
             int maxY = Math.max(centerY1, centerY2);
             int maxX = Math.max(centerX1, centerX2);
             int minY = Math.min(centerY1, centerY2);
-            int minX = Math.min(centerX1, centerX2);//*/
-
-            /*System.out.println("ROOM1 " + rooms.get(i - 1) + "\n" +
-                    "ROOM2 " + rooms.get(i) + "\n");
-            System.out.println("MaxY: " + maxY);
-            System.out.println("MaxX: " + maxX);
-            System.out.println("MinY: " + minY);
-            System.out.println("MinX: " + minX);//*/
-
+            int minX = Math.min(centerX1, centerX2);
             double rnd = Math.random();
 
             if ((centerY1 <= centerY2 && centerX1 >= centerX2)
@@ -286,8 +269,8 @@ public class VoronoiDungeon {
         }
     }
 
+    // Bresenhamin algoritmi viivojen piirtämiseksi taulukkoon (hyödynnetään defineSpace:ssa)
     private void bresenhamLinesToDungeon() {
-        //System.out.println("hw: "+height+", "+width);
         for (Edge e : edges) {
             if (e.start.y < height && e.start.y >= 0 && e.start.x < width && e.start.x >= 0
                     && e.end.y < height && e.end.y >= 0 && e.end.x < width && e.end.x >= 0) {
@@ -295,7 +278,6 @@ public class VoronoiDungeon {
                 int y2 = (int) Math.round(e.end.y);
                 int x1 = (int) Math.round(e.start.x);
                 int x2 = (int) Math.round(e.end.x);
-                //System.out.println("(" + y1 + "," + x1 + ") - (" + y2 + "," + x2 + ")");
 
                 int d = 0;
                 int dy1 = Math.abs(y1 - y2);
@@ -337,6 +319,7 @@ public class VoronoiDungeon {
         }
     }
 
+    // lyhennetään särmien päitä, mikäli ne ovat luolasto-taulukon rajaaman alueen ulkopuolella
     private void trimEdgeHeads() {
         double startY;
         double startX;
@@ -352,28 +335,20 @@ public class VoronoiDungeon {
             startX = e.start.x;
             endY = e.end.y;
             endX = e.end.x;
-            /*System.out.println("startY: " + startY + ", startX: " + startX);
-            System.out.println("endY: " + endY + ", endX: " + endX);
-            if (startY == 5.292452830188665 && startX == 64.47169811320755 && endY == 45.09385928730832 && endX == 108.25324521603915) {
-                System.out.println("jouuuu");
-            }//*/
 
             Point topIntercept = getEdgeIntersection(e, verticalDir);
             Point bottomIntercept = getEdgeIntersection(e, verticalDir2);
             Point leftIntercept = getEdgeIntersection(e, horizontalDir);
             Point rightIntercept = getEdgeIntersection(e, horizontalDir2);
-            /*System.out.println("topInt: "+topIntercept+"\n" +
-                    "botInt: "+bottomIntercept+"\n" +
-                    "lefInt: "+leftIntercept+"\n" +
-                    "rigInt: "+rightIntercept);//*/
 
+            // liuta ehtoja, miksi käsittelyssä olevaa särmää ei tarvitse käsitellä
             if ((((e.start.y < height - 1 && e.start.y > 0) && (e.end.y < height - 1 && e.end.y > 0))
                     && ((e.start.x < width - 1 && e.start.x > 0) && (e.end.x < width - 1 && e.end.x > 0)))
                     || (((startX < 0 && endX < 0) || startX > width - 1 && endX > width - 1)
                     || ((startY < 0 && endY < 0) || (startY > height - 1 && endY > height - 1)))
                     || (topIntercept == null || bottomIntercept == null || leftIntercept == null || rightIntercept == null)) {
-                //System.out.println("ei käsitelty\n");
 
+                // käsiteltävän särmän alkupään piste on luolasto-taulukon alueen sisäpuolella
             } else if (startY < height - 1 && startY > 0 && startX < width - 1 && startX > 0) {
                 if (endY < 0) {
                     endY = topIntercept.y;
@@ -383,6 +358,7 @@ public class VoronoiDungeon {
                     endX = bottomIntercept.x;
                 }
 
+                // käsiteltävän särmän loppupään piste on luolasto-taulukon alueen sisäpuolella
             } else if (endY < height - 1 && endY > 0 && endX < width - 1 && endX > 0) {
                 if (startY < 0) {
                     startY = topIntercept.y;
@@ -392,6 +368,7 @@ public class VoronoiDungeon {
                     startX = bottomIntercept.x;
                 }
 
+                // käsiteltävän särmän pisteiden alku-Y ja loppu-Y ovat luolasto-taulukon alueen ulkopuolella
             } else if ((startY < 0 && endY > height - 1) || startY > height - 1 && endY < 0) {
                 if (startY < 0) {
                     startY = topIntercept.y;
@@ -409,6 +386,8 @@ public class VoronoiDungeon {
                     endX = bottomIntercept.x;
                 }
 
+                // käsiteltävän särmän alkupään tai loppupään piste on luolasto-taulukon alueen ulkopuolella
+                // napataan ne harhailijat, jotka pääsi muiden verkkojen läpi
             } else if (startY < 0 || endY > height - 1 || startY > height - 1 || endY < 0
                     || startX < 0 || endX > width - 1 || startX > width - 1 || endX < 0) {
                 if (startY < 0) {
@@ -430,8 +409,8 @@ public class VoronoiDungeon {
                     startY = leftIntercept.x;
                     startX = leftIntercept.y;
                 } else if (startX > width - 1) {
-                        startY = rightIntercept.x;
-                        startX = rightIntercept.y;
+                    startY = rightIntercept.x;
+                    startX = rightIntercept.y;
 
                 } if (endX < 0) {
                     endY = leftIntercept.x;
@@ -448,24 +427,23 @@ public class VoronoiDungeon {
         }
     }
 
-    //end all unfinished edges
+    // viimeistelee kaikki keskeneräiset särmät
     private void endEdges(Parabola p) {
         if (p.type == Parabola.isFocus) {
             return;
         }
+
         double endX = getXofEdge(p);
         double endY = p.edge.slope * endX + p.edge.yint;
         p.edge.end = new Point(endY, endX);
         edges.add(p.edge);
 
-
         endEdges(p.left);
         endEdges(p.right);
     }
 
-    //returns current x-coordinate of an unfinished edge
+    // etsitään kahden paraabelin x:n leikkauspiste
     private double getXofEdge(Parabola par) {
-        //find intersection of two parabolas
         Parabola left = Parabola.getLeftChild(par);
         Parabola right = Parabola.getRightChild(par);
 
@@ -504,7 +482,7 @@ public class VoronoiDungeon {
         Parabola p0 = Parabola.getLeftChild(xLeft);
         Parabola p2 = Parabola.getRightChild(xRight);
 
-        //remove associated events since the points will be altered
+        // poistetaan pisteeseen liittyvät eventit, koska pisteita tullaan muuttamaan
         if (p0.event != null) {
             events.remove(p0.event);
             p0.event = null;
@@ -514,15 +492,16 @@ public class VoronoiDungeon {
             p2.event = null;
         }
 
-        Point p = new Point(getY(p1.point, e.p.x), e.p.x); //new vertex
+        // uusi verteksi
+        Point p = new Point(getY(p1.point, e.p.x), e.p.x);
 
-        //end edges
+        // päätellään särmät
         xLeft.edge.end = p;
         xRight.edge.end = p;
         edges.add(xLeft.edge);
         edges.add(xRight.edge);
 
-        //start new bisector (edge) from this vertex on which ever original edge is higher in tree
+        // aloitetaan uusi puolittaja (särmä) verteksistä, jonka alkuperäinen särmä on korkeammalla puussa
         Parabola higher = new Parabola();
         Parabola par = p1;
         while(par != root) {
@@ -532,7 +511,7 @@ public class VoronoiDungeon {
         }
         higher.edge = new Edge(p, p0.point, p2.point);
 
-        //delete p1 and parent (boundary edge) from beach line
+        // poistetaan p1-piste, sekä sen parent rantaviivasta
         Parabola gparent = p1.parent.parent;
         if (p1.parent.left == p1) {
             if (gparent.left == p1.parent) gparent.setLeft(p1.parent.right);
@@ -548,6 +527,7 @@ public class VoronoiDungeon {
         checkCircleEvent(p2);
     }
 
+    // tarkastetaan tapahtuuko kehä-tapahtumaa
     private void checkCircleEvent(Parabola b) {
         Parabola leftParent = Parabola.getLeftParent(b);
         Parabola rightParent = Parabola.getRightParent(b);
@@ -560,26 +540,26 @@ public class VoronoiDungeon {
         if (a == null || c == null || a.point == c.point) return;
         if (orientation(a.point, b.point, c.point) != 1) return;
 
-        //edges will intersect to form a vertex for a cirlcle event
+        // särmät kohtaavat kehä-tapahtuman takia muodostaakseen verteksin
         Point start = getEdgeIntersection(leftParent.edge, rightParent.edge);
         if (start == null) return;
 
-        //compute radius
+        //lasketaan säde
         double dx = b.point.x - start.x;
         double dy = b.point.y - start.y;
         double d = Math.sqrt((dx*dx) + (dy*dy));
         if (start.y + d < yCurrent) return; //must be after sweep line
 
         Point ep = new Point(start.y+d, start.x);
-        //System.out.println("added circle event " + ep);
 
-        //add circle event
+        //lisätään kehä-tapahtuma
         Event e = new Event(ep, Event.CIRCLE_EVENT);
         e.arc = b;
         b.event = e;
         events.add(e);
     }
 
+    // kahden särmän leikkauspiste
     private Point getEdgeIntersection(Edge a, Edge b) {
         if (b.slope == a.slope && b.yint != a.yint) return null;
 
@@ -589,6 +569,7 @@ public class VoronoiDungeon {
         return new Point(y, x);
     }
 
+    // etsitään pisteen orientaatio suhteessa särmään
     private int orientation(Point a, Point b, Point c) {
         double area = (b.x-a.x)*(c.y-a.y) - (b.y-a.y)*(c.x-a.x);
         if (area < 0) return -1;
@@ -596,15 +577,16 @@ public class VoronoiDungeon {
         else return 0;
     }
 
+    // selvitetään y-koordinaatti
     private double getY(Point p, double x) {
         double dp = 2*(p.y - yCurrent);
         double a1 = 1/dp;
         double b1 = -2*p.x/dp;
-        //          p.x² + p.y² - yCur² / dp
         double c1 = (p.x*p.x + p.y*p.y - yCurrent*yCurrent)/dp;
         return a1*x*x + b1*x + c1;
     }
 
+    // käsitellään tontit (sites)
     private void handleSite(Point p) {
         if (root == null) {
             root = new Parabola(p);
@@ -639,6 +621,7 @@ public class VoronoiDungeon {
         checkCircleEvent(p2);
     }
 
+    // etsitään paraabeli x-koordinaatin mukaan
     private Parabola getParabolaByX(double xx) {
         Parabola par = root;
         double x = 0;
@@ -650,23 +633,7 @@ public class VoronoiDungeon {
         return par;
     }
 
-    private void printDungeon() {
-        for (int y = 0; y < height; y++) {
-            for (int x = 0; x < width; x++) {
-                System.out.print(dungeon[y][x]);
-            }
-            System.out.println();
-        }
-    }
-
-    private void fillArray(int height, int width) {
-        for (int i = 0; i < height; i++) {
-            for (int points = 0; points < width; points++) {
-                dungeon[i][points] = " ";
-            }
-        }
-    }
-
+    // luodaan x-määrä satunnaisia pisteitä listalle
     private List<Point> randomPoints(int amount) {
         boolean[] yys = new boolean[height];
         random = new Random();
@@ -686,5 +653,23 @@ public class VoronoiDungeon {
             dungeon[y][x] = "*";
         }
         return points;
+    }
+
+    // alustetaan luolasto-taulukko
+    private void fillArray(int height, int width) {
+        for (int i = 0; i < height; i++) {
+            for (int points = 0; points < width; points++) {
+                dungeon[i][points] = " ";
+            }
+        }
+    }
+
+    private void printDungeon() {
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                System.out.print(dungeon[y][x]);
+            }
+            System.out.println();
+        }
     }
 }

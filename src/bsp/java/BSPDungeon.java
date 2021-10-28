@@ -1,12 +1,21 @@
 import java.util.*;
 
 public class BSPDungeon {
-    int height;
-    int width;
-    int chance;
-    String[][] dungeon;
-    Node nodes;
-    LinkedList<Node> selectedNodes;
+    // koko luolaston korkeus
+    private int height;
+
+    // koko luolaston leveys
+    private int width;
+
+    // todennäköisyys, että luodaan uusi huone, mikäli vähittäismäärä on täyttynyt
+    private int chance;
+
+    // taulukko, joka sisältää luolaston
+    public String[][] dungeon;
+    private Node nodes;
+
+    // valikoidut nodet, joita käytetään luolaston huoneiden tekemiseen
+    private LinkedList<Node> selectedNodes;
 
     public BSPDungeon(int height,int width,int roomsAtLeast,int chance) {
         this.height = height;
@@ -17,47 +26,23 @@ public class BSPDungeon {
         selectedNodes = new LinkedList<>();
 
         nodes.generateChildren();
-        //System.out.println();
         nodesToList(nodes);
-        /*for (Node node : selectedNodes) {
-            System.out.println(node);
-        }
-        System.out.println(selectedNodes.size());//*/
         selectNodes();
-
         selectedNodes.removeAll(Collections.singleton(null));
-        /*for (Node node : selectedNodes) {
-            System.out.println(node);
-        }
-        System.out.println(selectedNodes.size());//*/
-
         initializeDungeon(height, dungeon);
-
-        /*for (int i = 1; i < selectedNodes.size(); i++) {
-            createHalls(selectedNodes.get(i-1), selectedNodes.get(i));
-        }*/
-
-        /*for (Node node : selectedNodes) {
-            nodesToDungeon2(node);
-        }*/
-        //printDungeon();
-        //System.out.println();
-        //System.out.println("lopulliset huoneet");
 
         for (Node node : selectedNodes) {
             nodes.shrinkNodes(node);
         }
         for (Node node : selectedNodes) {
-          //  if (reservedRoom(node, dungeon)) {
-                drawDungeon(node);
-            //}
+            drawDungeon(node);
         }
         for (int i = 1; i < selectedNodes.size(); i++) {
             createHalls(selectedNodes.get(i-1), selectedNodes.get(i));
         }
-        //printDungeon();
     }
 
+    // siirretään koko puun nodet listalle
     private void nodesToList(Node node) {
         if (node.left != null) {
             selectedNodes.push(node.left);
@@ -70,6 +55,7 @@ public class BSPDungeon {
         }
     }
 
+    // valikoidaan nodet listalta, niin ettei tule päällekkäisiä huoneita
     private void selectNodes() {
         int previousHeightB = -1;
         int previousHeightE = -1;
@@ -95,104 +81,7 @@ public class BSPDungeon {
         }
     }
 
-    private void flatNodesToList(LinkedList<Node> flattenedNodes) {
-        while (nodes.right != null) {
-            flattenedNodes.push(nodes.right);
-            nodes = nodes.right;
-        }
-    }
-
-    private void printDungeon() {
-        for (int y = 0; y <= height; y++) {
-            for (int x = 0; x <= width; x++) {
-                System.out.print(dungeon[y][x]);
-            }
-            System.out.println();
-        }
-    }
-
-    public void nodesToDungeon2(Node d) {
-        //if (d.left != null) {
-            //yLÄ
-            for (int x = d.widthB; x <= d.widthE; x++) {
-                dungeon[d.heightB][x] = "#";
-            }
-            //aLA
-            for (int x = d.widthB; x <= d.widthE; x++) {
-                dungeon[d.heightE][x] = "#";
-            }
-            //vASEN
-            for (int y = d.heightB; y <= d.heightE; y++) {
-                dungeon[y][d.widthB] = "#";
-            }
-            //oIKEA
-            for (int y = d.heightB; y <= d.heightE; y++) {
-                dungeon[y][d.widthE] = "#";
-            }
-            //nodesToDungeon(d.left);
-        //}
-        /*if (d.right != null) {
-            //yLÄ
-            for (int x = d.right.widthB; x <= d.right.widthE; x++) {
-                dungeon[d.right.heightB - 1][x] = "#";
-            }
-            //aLA
-            for (int x = d.right.widthB; x <= d.right.widthE; x++) {
-                dungeon[d.right.heightE + 1][x] = "#";
-            }
-            //vASEN
-            for (int y = d.right.heightB; y <= d.right.heightE; y++) {
-                dungeon[y][d.right.widthB - 1] = "#";
-            }
-            //oIKEA
-            for (int y = d.right.heightB; y <= d.right.heightE; y++) {
-                dungeon[y][d.right.widthE + 1] = "#";
-            }
-            //nodesToDungeon(d.right);
-        }*/
-    }
-
-    public void nodesToDungeon(Node d) {
-        if (d.left != null) {
-            //yLÄ
-            for (int x = d.left.widthB; x <= d.left.widthE; x++) {
-                dungeon[d.left.heightB - 1][x] = "#";
-            }
-            //aLA
-            for (int x = d.left.widthB; x <= d.left.widthE; x++) {
-                dungeon[d.left.heightE + 1][x] = "#";
-            }
-            //vASEN
-            for (int y = d.left.heightB; y <= d.left.heightE; y++) {
-                dungeon[y][d.left.widthB - 1] = "#";
-            }
-            //oIKEA
-            for (int y = d.left.heightB; y <= d.left.heightE; y++) {
-                dungeon[y][d.left.widthE + 1] = "#";
-            }
-            nodesToDungeon(d.left);
-        }
-        if (d.right != null) {
-            //yLÄ
-            for (int x = d.right.widthB; x <= d.right.widthE; x++) {
-                dungeon[d.right.heightB - 1][x] = "#";
-            }
-            //aLA
-            for (int x = d.right.widthB; x <= d.right.widthE; x++) {
-                dungeon[d.right.heightE + 1][x] = "#";
-            }
-            //vASEN
-            for (int y = d.right.heightB; y <= d.right.heightE; y++) {
-                dungeon[y][d.right.widthB - 1] = "#";
-            }
-            //oIKEA
-            for (int y = d.right.heightB; y <= d.right.heightE; y++) {
-                dungeon[y][d.right.widthE + 1] = "#";
-            }
-            nodesToDungeon(d.right);
-        }
-    }
-
+    // luodaan käytävät huoneiden välille
     public void createHalls(Node d1, Node d2) {
         int centerY1 = ((d1.heightE - d1.heightB) / 2) + d1.heightB;
         int centerX1 = ((d1.widthE - d1.widthB) / 2) + d1.widthB;
@@ -202,18 +91,13 @@ public class BSPDungeon {
         int maxX = Math.max(centerX1, centerX2);
         int minY = Math.min(centerY1, centerY2);
         int minX = Math.min(centerX1, centerX2);
-        /*System.out.println(centerY1);
-        System.out.println(centerX1);
-        System.out.println(centerY2);
-        System.out.println(centerX2);
-        System.out.println("MaxY: "+maxY);
-        System.out.println("MaxX: "+maxX);
-        System.out.println("MinY: "+minY);
-        System.out.println("MinX: "+minX);//*/
         double rnd = Math.random();
 
+        // centerY1, centerY2, centerX1, centerX2 sijainti toisistaan
         if ((centerY1 <= centerY2 && centerX1 >= centerX2)
                 || (centerY1 >= centerY2 && centerX1 <= centerX2)) {
+
+            // arvotaan mennäänkö ylä- vai alakautta
             if (rnd < 0.5) {// minY, minX
                 for (int y = minY; y <= maxY; y++) {
                     if (!dungeon[y][minX - 1].equals(".")) dungeon[y][minX - 1] = "#";
@@ -239,8 +123,8 @@ public class BSPDungeon {
                     if (!dungeon[maxY + 1][x].equals(".")) dungeon[maxY + 1][x] = "#";
                 }
                 if (!dungeon[maxY + 1][maxX + 1].equals(".")) dungeon[maxY + 1][maxX + 1] = "#";
-
             }
+
         } else if ((centerY1 <= centerY2 && centerX1 <= centerX2)
                 || (centerY1 >= centerY2 && centerX1 >= centerX2)) {
             if (rnd < 0.5) {// minY, maxX
@@ -272,24 +156,8 @@ public class BSPDungeon {
         }
     }
 
-    public boolean reservedRoom(Node d, String[][] r) {
-        for (int y = d.heightB; y <= d.heightE; y++) {
-            for (int x = d.widthB; x <= d.widthE; x++) {
-                if (r[y][x] != " ") {
-                    return false;
-                }
-            }
-        }
-        /*if (r[d.heightB][d.widthB] != " " || r[d.heightB][d.widthE] != " " || r[d.heightE][d.widthB] != " " || r[d.heightE][d.widthE] != " ") {
-            return false;
-        }*/
-
-        return true;
-    }
-
+    // piirretään luolaston huoneet taulukkoon valikoitujen nodejen perusteella
     public void drawDungeon(Node d) {
-        //║╔╗╚╝═░
-
         //corners
         dungeon[d.heightB - 1][d.widthB - 1] = "#";
         dungeon[d.heightB - 1][d.widthE + 1] = "#";
@@ -314,9 +182,19 @@ public class BSPDungeon {
         }
     }
 
+    // alustetaan luolasto-taulukko
     private void initializeDungeon(int h, String[][] dungeon) {
         for (int i = 0; i <= h; i++) {
             Arrays.fill(dungeon[i], " ");
+        }
+    }
+
+    private void printDungeon() {
+        for (int y = 0; y <= height; y++) {
+            for (int x = 0; x <= width; x++) {
+                System.out.print(dungeon[y][x]);
+            }
+            System.out.println();
         }
     }
 }

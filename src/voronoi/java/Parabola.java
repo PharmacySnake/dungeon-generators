@@ -2,14 +2,13 @@ public class Parabola {
 
     public static int isFocus = 0;
     public static int isVertex = 1;
-    int type;
-    Point point;
-    Edge edge;
-    Event event;
-
-    Parabola parent;
-    Parabola left;
-    Parabola right;
+    public int type;
+    public Point point;
+    public Edge edge;
+    public Event event;
+    public Parabola parent;
+    public Parabola left;
+    public Parabola right;
 
     public Parabola() {
         type = isVertex;
