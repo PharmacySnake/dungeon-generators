@@ -2,6 +2,9 @@
   <artifact type="jar" name="dungeon_generators:jar">
     <output-path>$PROJECT_DIR$/out/artifacts/dungeon_generators_jar</output-path>
     <root id="archive" name="dungeon_generators.jar">
+      <element id="directory" name="META-INF">
+        <element id="file-copy" path="$PROJECT_DIR$/src/bsp/java/META-INF/MANIFEST.MF" />
+      </element>
       <element id="module-output" name="dungeon_generators" />
     </root>
   </artifact>
